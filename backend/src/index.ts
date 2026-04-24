@@ -1,4 +1,7 @@
 import Fastify from 'fastify'
+import 'dotenv/config'
+
+const port = Number(process.env.PORT) || 3000
 
 const app = Fastify({
   logger: true
@@ -12,8 +15,8 @@ app.get('/', async (request, reply) => {
 // iniciar servidor
 const start = async () => {
   try {
-    await app.listen({ port: 3000 })
-    console.log('Servidor rodando em http://localhost:3000')
+    await app.listen({ port })
+    console.log(`Servidor rodando em http://localhost:${port}`)
   } catch (err) {
     app.log.error(err)
     process.exit(1)
