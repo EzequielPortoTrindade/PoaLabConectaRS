@@ -1,26 +1,28 @@
+// src/server.ts
+
 import Fastify from 'fastify'
-import 'dotenv/config'
+import { connectMongo } from './database/mongo.connection'
 
-const port = Number(process.env.PORT) || 3000
+import { MongoUsersRepository } from './repositories/mongo.user.repository'
+import { UsersService } from './services/user.service'
+import { buildUsersController } from './controllers/user.controller'
+import { usersRoutes } from './routes/user.route'
 
-const app = Fastify({
-  logger: true
-})
+const app = Fastify({ logger: true })
 
-// rota simples
-app.get('/', async (request, reply) => {
-  return { message: 'testando rota fastify' }
-})
+async function start() {
+  await connectMongo()
 
-// iniciar servidor
-const start = async () => {
-  try {
-    await app.listen({ port })
-    console.log(`Servidor rodando em http://localhost:${port}`)
-  } catch (err) {
-    app.log.error(err)
-    process.exit(1)
-  }
+  const repository = new MongoUsersRepository()
+  const service = new UsersService(repository)
+  const controller = buildUsersController(service)
+
+  app.register((instance, opts, done) => {
+    usersRoutes(instance, controller)
+    done()
+  }, { prefix: '/users' })
+
+  await app.listen({ port: 3000 })
 }
 
 start()
