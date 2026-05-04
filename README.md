@@ -11,3 +11,5 @@ npm start
 # teste:
 npm test
 npm run test:watch
+
+npx vitest run src/test/user.mapper.test.ts

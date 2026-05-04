@@ -14,6 +14,6 @@
     "declarationMap": true,
     "sourceMap": true
   },
-  "include": ["src/**/*", "../../backend/src/database", "../../backend/src/middlewares", "../../backend/src/routes", "../../backend/src/schemas", "../../backend/src/routes"],
+  "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
 }
