@@ -8,7 +8,6 @@
 -- =====================
 
 CREATE TYPE tipo_usuario AS ENUM ('admin', 'professor');
-CREATE TYPE tipo_contato AS ENUM ('telefone', 'whatsapp');
 CREATE TYPE tipo_categoria AS ENUM ('capital', 'custeio');
 CREATE TYPE tipo_movimentacao_log AS ENUM ('entrada', 'saida');
 
@@ -17,7 +16,7 @@ CREATE TYPE tipo_movimentacao_log AS ENUM ('entrada', 'saida');
 -- =====================
 
 CREATE TABLE localizacao (
-    id_localizacao SERIAL PRIMARY KEY,
+    id_localizacao GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     nome_cidade VARCHAR(100) NOT NULL
 );
 
@@ -26,13 +25,13 @@ CREATE TABLE localizacao (
 -- =====================
 
 CREATE TABLE escola (
-    id_escola SERIAL PRIMARY KEY,
+    id_escola GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     nome VARCHAR(150) NOT NULL,
     rua VARCHAR(100),
     numero INT,
     bairro VARCHAR(100),
     uf VARCHAR(2), -- ex: RS, SP
-    id_localizacao INT,
+
 
     CONSTRAINT fk_escola_localizacao
         FOREIGN KEY (id_localizacao)
@@ -44,11 +43,10 @@ CREATE TABLE escola (
 -- =====================
 
 CREATE TABLE usuario (
-    id_usuario SERIAL PRIMARY KEY,
+    id_usuario GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
     tipo tipo_usuario NOT NULL,
-    id_escola INT,
 
     CONSTRAINT fk_usuario_escola
         FOREIGN KEY (id_escola)
@@ -60,36 +58,16 @@ CREATE TABLE usuario (
 -- =====================
 
 CREATE TABLE fornecedor (
-    id_fornecedor SERIAL PRIMARY KEY,
+    id_fornecedor GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    CNPJ VARCHAR(18) NOT NULL,
     nome VARCHAR(100) NOT NULL,
-    endereco VARCHAR(150),
-    website VARCHAR(100)
-);
+    telefone VARCHAR(20) NOT NULL, 
+    email VARCHAR(150)  NOT NULL,
+    website VARCHAR(150)
 
--- =====================
--- TABELA CONTATOS (para fornecedor)
--- =====================
-
-CREATE TABLE contatos (
-    id_contato SERIAL PRIMARY KEY,
-    usuario_id INT,
-    tipo tipo_contato NOT NULL,
-    numero VARCHAR(20) NOT NULL,
-
-    CONSTRAINT fk_contatos_fornecedor
-        FOREIGN KEY (fornecedor_id)
-        REFERENCES usuario(id_fornecedor)
-);
-
--- =====================
--- TABELA TIPO (categoria de itens)
--- =====================
-
-CREATE TABLE tipo (
-    id_tipo SERIAL PRIMARY KEY,
-    nome VARCHAR(100) NOT NULL,
-    categoria tipo_categoria NOT NULL,
-    descricao VARCHAR(150)
+     CONSTRAINT fk_localizacao_fornecedor
+        FOREIGN KEY (id_localizacao)
+        REFERENCES localizacao(id_localizacao)
 );
 
 -- =====================
@@ -97,31 +75,27 @@ CREATE TABLE tipo (
 -- =====================
 
 CREATE TABLE item (
-    id_item SERIAL PRIMARY KEY,
+    id_item GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     quantidade INT NOT NULL,
+    tipo VARCHAR(100) NOT NULL,
+    categoria tipo_categoria NOT NULL,
     descricao VARCHAR(150),
-
-    id_tipo INT,
-    id_escola INT,
-
-    CONSTRAINT fk_item_tipo
-        FOREIGN KEY (id_tipo)
-        REFERENCES tipo(id_tipo),
 
     CONSTRAINT fk_item_escola
         FOREIGN KEY (id_escola)
-        REFERENCES escola(id_escola)
+        REFERENCES escola(id_escola),
+
+    CONSTRAINT fk_item_fornecedor
+        FOREIGN KEY (id_fornecedor)
+        REFERENCES fornecedor(id_fornecedor)
 );
 
 -- =====================
 -- TABELA COMPRAS
 -- =====================
-
+--entrada
 CREATE TABLE compras (
-    id_compras SERIAL PRIMARY KEY,
-    id_item INT,
-    id_fornecedor INT,
-    id_escola INT,
+    id_compra GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     quantidade INT NOT NULL,
     data_compra DATE,
     valor_unitario NUMERIC(10,2),
@@ -142,18 +116,13 @@ CREATE TABLE compras (
 );
 
 -- =====================
--- TABELA LOG DE MOVIMENTAÇÃO
+-- TABELA LOG DE SAIDA
 -- =====================
-
-CREATE TABLE log_movimentacao (
-    id_log SERIAL PRIMARY KEY,
-    id_item INT,
-    id_usuario INT,
-    tipo_movimentacao tipo_movimentacao_log NOT NULL,
-    quantidade INT,
+CREATE TABLE log_saida (
+    id_log GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    quantidade INT NOT NULL,
     data_hora TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    motivo VARCHAR(150),
-
+    
     CONSTRAINT fk_log_item
         FOREIGN KEY (id_item)
         REFERENCES item(id_item),
