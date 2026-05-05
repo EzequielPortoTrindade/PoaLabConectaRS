@@ -8,7 +8,7 @@
 -- =====================
 
 CREATE TYPE tipo_usuario AS ENUM ('admin', 'professor');
-CREATE TYPE tipo_categoria AS ENUM ('capital', 'custeio');
+CREATE TYPE tipo_categoria AS ENUM ('capital', 'consumo');
 
 -- =====================
 -- TABELA LOCALIZACAO
