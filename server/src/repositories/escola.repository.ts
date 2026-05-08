@@ -1,6 +1,3 @@
-// src/repositories/escola.repository.ts
-// Padrão Repository: mesma interface, duas implementações (Prisma | Mongoose)
-
 import { prisma } from '../database'
 import { EscolaModel } from '../database/mongoose/models'
 import { EscolaInput } from '../schemas'
