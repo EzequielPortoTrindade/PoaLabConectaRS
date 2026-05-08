@@ -1,12 +1,10 @@
-// Para alternar entre bancos: mude o provider e DATABASE_URL
-
 generator client {
   provider = "prisma-client"
 }
 
 datasource db {
-  provider = "mongodb" // troque por "postgresql" para testes locais com Prisma+Mongo
-  url = env("DATABASE_URL")
+  provider = "postgresql" 
+  output = "../src/generated"
 }
 
 enum tipo_usuario {
@@ -20,66 +18,110 @@ enum tipo_categoria {
 }
 
 model Localizacao {
-  id_localizacao Int          @id @default(autoincrement())
-  nome_cidade    String       @db.VarChar(100)
+  id_localizacao Int @id @default(autoincrement())
+  nome_cidade    String @db.VarChar(100)
+
+  escolas     Escola[]
+  fornecedores Fornecedor[]
 }
 
 model Escola {
-  id_escola      Int          @id @default(autoincrement())
-  nome           String       @db.VarChar(150)
-  rua            String?      @db.VarChar(100)
-  numero         Int?      
-  bairro         String?      @db.VarChar(100)
-  uf             String?      @db.VarChar(2)
-  e_localizacao  Localizacao  @relation(fields: [id_localizacao], references: [id_localizacao])
+  id_escola Int @id @default(autoincrement())
+
+  nome    String  @db.VarChar(150)
+  rua     String? @db.VarChar(100)
+  numero  Int?
+  bairro  String? @db.VarChar(100)
+  uf      String? @db.VarChar(2)
+
+  id_localizacao Int
+  e_localizacao Localizacao @relation(fields: [id_localizacao], references: [id_localizacao])
+
+  usuarios Usuario[]
+  itens Item[]
+  compras Compras[]
 }
 
 model Usuario {
-  id_usuario    Int           @id @default(autoincrement())
-  nome          String        @db.VarChar(100)
-  email         String        @unique @db.VarChar(100)
-  tipo          tipo_usuario
-  u_escola      Escola?       @relation(fields: [id_escola], references: [id_escola])
+  id_usuario Int @id @default(autoincrement())
+
+  nome  String @db.VarChar(100)
+  email String @unique @db.VarChar(100)
+
+  tipo tipo_usuario
+
+  id_escola Int?
+  u_escola Escola? @relation(fields: [id_escola], references: [id_escola])
+
+  compras Compras[]
+  logs Log_Saidas[]
 }
 
 model Fornecedor {
-  id_fornecedor Int          @id @default(autoincrement())
-  cnpj          String       @db.VarChar(18)
-  nome          String       @db.VarChar(100)
-  telefone      String       @db.VarChar(20)
-  email         String       @db.VarChar(150)
-  website       String?      @db.VarChar(150)
-  f_localizacao Localizacao  @relation(fields: [id_localizacao], references: [id_localizacao])
+  id_fornecedor Int @id @default(autoincrement())
+
+  cnpj     String  @db.VarChar(18)
+  nome     String  @db.VarChar(100)
+  telefone String  @db.VarChar(20)
+  email    String  @db.VarChar(150)
+  website  String? @db.VarChar(150)
+
+  id_localizacao Int
+  f_localizacao Localizacao @relation(fields: [id_localizacao], references: [id_localizacao])
+
+  itens Item[]
+  compras Compras[]
 }
 
-model item {
-  id_item        Int          @id @default(autoincrement())
-  quantidade     Int
-  nome           String       @db.VarChar(100)   
-  categoria      tipo_categoria
-  descricao      String?      @db.VarChar(150)
-  i_escola       Escola      @relation(fields: [id_escola], references: [id_escola])
-  i_fornecedor   Fornecedor  @relation(fields: [id_fornecedor], references: [id_fornecedor])
+model Item {
+  id_item Int @id @default(autoincrement())
+
+  quantidade Int
+  nome       String @db.VarChar(100)
+
+  categoria tipo_categoria
+  descricao String? @db.VarChar(150)
+
+  id_escola Int
+  id_fornecedor Int
+
+  i_escola Escola @relation(fields: [id_escola], references: [id_escola])
+  i_fornecedor Fornecedor @relation(fields: [id_fornecedor], references: [id_fornecedor])
+
+  compras Compras[]
+  logs Log_Saidas[]
 }
 
 model Compras {
-  id_compras     Int          @id @default(autoincrement())
-  quantidade     Int          
-  data_compra    DateTime     @db.Date
-  valor_unitario Decimal      @db.Decimal(10, 2)
-  marca          String       @db.VarChar(100)
-  nota_fiscal    String       @db.VarChar(100)
-  c_item         Item         @relation(fields: [id_item], references: [id_item])
-  c_usuario      Usuario      @relation(fields: [id_usuario], references: [id_usuario])
-  c_escola       Escola       @relation(fields: [id_escola], references: [id_escola])
-  c_fornecedor   Fornecedor   @relation(fields: [id_fornecedor], references: [id_fornecedor])
+  id_compras Int @id @default(autoincrement())
+
+  quantidade Int
+  data_compra DateTime @db.Date
+  valor_unitario Decimal @db.Decimal(10, 2)
+
+  marca String @db.VarChar(100)
+  nota_fiscal String @db.VarChar(100)
+
+  id_item Int
+  id_usuario Int
+  id_escola Int
+  id_fornecedor Int
+
+  c_item Item @relation(fields: [id_item], references: [id_item])
+  c_usuario Usuario @relation(fields: [id_usuario], references: [id_usuario])
+  c_escola Escola @relation(fields: [id_escola], references: [id_escola])
+  c_fornecedor Fornecedor @relation(fields: [id_fornecedor], references: [id_fornecedor])
 }
 
 model Log_Saidas {
-  id_log        Int           @id @default(autoincrement()) 
-  quantidade    Int           
-  data_hora     DateTime      @default(now())
-  l_item        Item          @relation(fields: [id_item], references: [id_item])
-  l_usuario     Usuario       @relation(fields: [id_usuario], references: [id_usuario])
-}
+  id_log Int @id @default(autoincrement())
 
+  quantidade Int
+  data_hora DateTime @default(now())
+
+  id_item Int
+  id_usuario Int
+
+  l_item Item @relation(fields: [id_item], references: [id_item])
+  l_usuario Usuario @relation(fields: [id_usuario], references: [id_usuario])
+}

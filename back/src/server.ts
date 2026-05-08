@@ -56,6 +56,7 @@ async function bootstrap() {
 
     console.log("Server running")
   } catch (err) {
+    
     app.log.error(err)
     process.exit(1)
   }

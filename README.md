@@ -1,8 +1,8 @@
 # PoaLabConectaRS
 Projeto de gerenciamento de inventário
 
-npm install       # instala dependências
-npm run dev       # desenvolvimento
+pnpm install       # instala dependências
+pnpm run dev       # desenvolvimento
 
 # produção:
 npm run build
