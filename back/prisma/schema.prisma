@@ -1,10 +1,9 @@
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql" 
-  output = "../src/generated"
+  provider = "postgresql"
 }
 
 enum tipo_usuario {
@@ -35,11 +34,12 @@ model Escola {
   uf      String? @db.VarChar(2)
 
   id_localizacao Int
-  e_localizacao Localizacao @relation(fields: [id_localizacao], references: [id_localizacao])
+  localizacao Localizacao @relation(fields: [id_localizacao], references: [id_localizacao])
 
   usuarios Usuario[]
   itens Item[]
   compras Compras[]
+  log Log_Saidas[]
 }
 
 model Usuario {
@@ -47,11 +47,12 @@ model Usuario {
 
   nome  String @db.VarChar(100)
   email String @unique @db.VarChar(100)
+  password String @db.VarChar(100)
 
   tipo tipo_usuario
 
   id_escola Int?
-  u_escola Escola? @relation(fields: [id_escola], references: [id_escola])
+  escola Escola? @relation(fields: [id_escola], references: [id_escola])
 
   compras Compras[]
   logs Log_Saidas[]
@@ -67,7 +68,7 @@ model Fornecedor {
   website  String? @db.VarChar(150)
 
   id_localizacao Int
-  f_localizacao Localizacao @relation(fields: [id_localizacao], references: [id_localizacao])
+  localizacao Localizacao @relation(fields: [id_localizacao], references: [id_localizacao])
 
   itens Item[]
   compras Compras[]
@@ -85,8 +86,8 @@ model Item {
   id_escola Int
   id_fornecedor Int
 
-  i_escola Escola @relation(fields: [id_escola], references: [id_escola])
-  i_fornecedor Fornecedor @relation(fields: [id_fornecedor], references: [id_fornecedor])
+  escola Escola @relation(fields: [id_escola], references: [id_escola])
+  fornecedor Fornecedor @relation(fields: [id_fornecedor], references: [id_fornecedor])
 
   compras Compras[]
   logs Log_Saidas[]
@@ -107,10 +108,10 @@ model Compras {
   id_escola Int
   id_fornecedor Int
 
-  c_item Item @relation(fields: [id_item], references: [id_item])
-  c_usuario Usuario @relation(fields: [id_usuario], references: [id_usuario])
-  c_escola Escola @relation(fields: [id_escola], references: [id_escola])
-  c_fornecedor Fornecedor @relation(fields: [id_fornecedor], references: [id_fornecedor])
+  item Item @relation(fields: [id_item], references: [id_item])
+  usuario Usuario @relation(fields: [id_usuario], references: [id_usuario])
+  escola Escola @relation(fields: [id_escola], references: [id_escola])
+  fornecedor Fornecedor @relation(fields: [id_fornecedor], references: [id_fornecedor])
 }
 
 model Log_Saidas {
@@ -121,7 +122,9 @@ model Log_Saidas {
 
   id_item Int
   id_usuario Int
+  id_escola Int
 
-  l_item Item @relation(fields: [id_item], references: [id_item])
-  l_usuario Usuario @relation(fields: [id_usuario], references: [id_usuario])
+  item Item @relation(fields: [id_item], references: [id_item])
+  usuario Usuario @relation(fields: [id_usuario], references: [id_usuario])
+  escola Escola @relation(fields: [id_escola], references: [id_escola])
 }

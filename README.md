@@ -12,4 +12,5 @@ npm start
 npm test
 npm run test:watch
 
-npx vitest run src/test/user.mapper.test.ts
+pnpm prisma migrate dev --name init
+

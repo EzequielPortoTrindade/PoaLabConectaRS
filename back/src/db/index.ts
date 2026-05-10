@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client"
+import { PrismaClient } from "@prisma/client";
 import mongoose from 'mongoose'
 
 const isProduction = process.env.NODE_ENV === 'production'
