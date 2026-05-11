@@ -3,6 +3,36 @@
 -- As tabelas do banco de dados
 -- =========================================
 
+
+-- =====================
+-- SELECT
+-- =====================
+select * from localizacao;
+
+
+
+-- =====================
+-- INSERT
+-- =====================
+
+INSERT INTO localizacao (nome_cidade, uf)
+VALUES ('São Paulo', 'SP');
+
+
+
+-- =====================
+-- DROPS
+-- =====================
+DROP TABLE localizacao;
+DROP TABLE escola; 
+
+
+-- =====================
+-- DROPS CASCATA
+-- =====================
+
+DROP TABLE localizacao CASCADE; 
+
 -- =====================
 -- ENUMS
 -- =====================
@@ -15,8 +45,9 @@ CREATE TYPE tipo_categoria AS ENUM ('capital', 'consumo');
 -- =====================
 
 CREATE TABLE localizacao (
-    id_localizacao GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    nome_cidade VARCHAR(100) NOT NULL
+    id_localizacao INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    nome_cidade VARCHAR(100) NOT NULL,
+	uf VARCHAR(2) -- ex: RS, SP
 );
 
 -- =====================
@@ -24,14 +55,14 @@ CREATE TABLE localizacao (
 -- =====================
 
 CREATE TABLE escola (
-    id_escola GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id_escola INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     nome VARCHAR(150) NOT NULL,
     rua VARCHAR(100),
     numero INT,
     bairro VARCHAR(100),
-    uf VARCHAR(2), -- ex: RS, SP
 
-
+    id_localizacao INTEGER, 
+	
     CONSTRAINT fk_escola_localizacao
         FOREIGN KEY (id_localizacao)
         REFERENCES localizacao(id_localizacao)
@@ -42,10 +73,12 @@ CREATE TABLE escola (
 -- =====================
 
 CREATE TABLE usuario (
-    id_usuario GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id_usuario INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
     tipo tipo_usuario NOT NULL,
+
+	 id_escola INTEGER, 
 
     CONSTRAINT fk_usuario_escola
         FOREIGN KEY (id_escola)
@@ -57,13 +90,15 @@ CREATE TABLE usuario (
 -- =====================
 
 CREATE TABLE fornecedor (
-    id_fornecedor GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id_fornecedor INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     CNPJ VARCHAR(18) NOT NULL,
     nome VARCHAR(100) NOT NULL,
     telefone VARCHAR(20) NOT NULL, 
     email VARCHAR(150)  NOT NULL,
     website VARCHAR(150)
 
+	 id_fornecedor INTEGER, 
+	 
      CONSTRAINT fk_localizacao_fornecedor
         FOREIGN KEY (id_localizacao)
         REFERENCES localizacao(id_localizacao)
@@ -74,12 +109,15 @@ CREATE TABLE fornecedor (
 -- =====================
 
 CREATE TABLE item (
-    id_item GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id_item INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     quantidade INT NOT NULL,
     tipo VARCHAR(100) NOT NULL,
     categoria tipo_categoria NOT NULL,
     descricao VARCHAR(150),
-
+	
+	id_escola INTEGER, 
+	id_fornecedor INTEGER, 
+	
     CONSTRAINT fk_item_escola
         FOREIGN KEY (id_escola)
         REFERENCES escola(id_escola),
@@ -94,13 +132,17 @@ CREATE TABLE item (
 -- =====================
 --entrada
 CREATE TABLE compras (
-    id_compra GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id_compra INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     quantidade INT NOT NULL,
     data_compra DATE,
     valor_unitario NUMERIC(10,2),
     marca VARCHAR(40),
     nota_fiscal VARCHAR(50),
-
+	
+	 id_item INTEGER, 
+	 id_escolas INTEGER,
+	 id_fornecedor INTEGER, 
+	 
     CONSTRAINT fk_compras_item
         FOREIGN KEY (id_item)
         REFERENCES item(id_item),
@@ -118,10 +160,13 @@ CREATE TABLE compras (
 -- TABELA LOG DE SAIDA
 -- =====================
 CREATE TABLE log_saida (
-    id_log GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id_log INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     quantidade INT NOT NULL,
     data_hora TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    
+	
+    id_item INTEGER, 
+	id_usuario INTEGER, 
+	
     CONSTRAINT fk_log_item
         FOREIGN KEY (id_item)
         REFERENCES item(id_item),
