@@ -2,10 +2,6 @@ export interface Localizacao {
     id: number;
     nome_cidade: string;
     uf: string;
-
-    // fornecedores: Fornecedor[];
-    // usuarios: Usuario[];
-    // escolas: Escola[];
 }
 
 export interface LocalCreate {
@@ -14,5 +10,5 @@ export interface LocalCreate {
 }
 
 export interface LocalRepository {
-    create(data: Localizacao): Promise<Localizacao>;
+    create(data: LocalCreate): Promise<Localizacao>;
 }

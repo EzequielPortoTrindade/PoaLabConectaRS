@@ -8,9 +8,14 @@ class UserUseCase {
     }
 
     async create({nome, email, senha, tipo, id_escola}: UserCreate): Promise<Usuario>{
+        const verifyIfUserExists = await this.userRepo.findByEmail(email);
+        if(verifyIfUserExists) {
+            throw new Error('User already exists');
+        }
         const result = await this.userRepo.create({nome, email, senha, tipo, id_escola});
         return result;
     }
+
 }
 
 export { UserUseCase };

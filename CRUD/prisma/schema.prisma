@@ -79,6 +79,7 @@ model Item {
   id_item Int @id @default(autoincrement())
 
   quantidade Int
+  n_patrimonio String?
   nome       String
   categoria  tipo_categoria
   descricao  String?

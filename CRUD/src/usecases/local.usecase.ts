@@ -7,7 +7,10 @@ class LocalUseCase {
         this.localRepo = new LocalRepoPrisma()
     }
 
-    async create({nome_cidade, uf}: LocalCreate): Promise<Localizacao>{}
+    async create({nome_cidade, uf}: LocalCreate): Promise<Localizacao>{
+        const result = await this.localRepo.create({nome_cidade, uf});
+        return result;
+    }
 }
 
 export { LocalUseCase };
