@@ -112,6 +112,7 @@ CREATE TABLE item (
     id_item INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     quantidade INT NOT NULL,
     nome VARCHAR(100) NOT NULL,
+	numero_patrimonio TEXT[],
     categoria tipo_categoria NOT NULL,
     descricao VARCHAR(150),
 	
