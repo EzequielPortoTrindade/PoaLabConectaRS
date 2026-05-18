@@ -111,7 +111,7 @@ CREATE TABLE fornecedor (
 CREATE TABLE item (
     id_item INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     quantidade INT NOT NULL,
-    tipo VARCHAR(100) NOT NULL,
+    nome VARCHAR(100) NOT NULL,
     categoria tipo_categoria NOT NULL,
     descricao VARCHAR(150),
 	
