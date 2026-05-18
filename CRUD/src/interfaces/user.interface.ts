@@ -2,12 +2,12 @@ import { tipo_usuario } from "@prisma/client";
 import { Escola } from "./school.interface.js";
 
 export interface Usuario {
-    id: number;
+    id_usuario: number;
     nome: string;
     email: string;
     senha: string;
     tipo: tipo_usuario;
-    id_escola: number;
+    id_escola: number | null;
     escola?: Escola;
 }
 

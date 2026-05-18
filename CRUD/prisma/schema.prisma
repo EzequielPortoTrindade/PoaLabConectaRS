@@ -4,6 +4,7 @@ generator client {
 
 datasource db {
   provider = "sqlite" // ou postgresql
+  url      = env("DATABASE_URL")
 }
 
 enum tipo_usuario {

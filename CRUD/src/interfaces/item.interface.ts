@@ -1,6 +1,11 @@
-import { tipo_categoria } from "@prisma/client";
+//import { tipo_categoria } from "@prisma/client";
 import { Escola } from "./school.interface.js";
 import { Fornecedor } from "./supplier.interface.js";
+
+export enum tipo_categoria {
+    capital,
+    consumo
+}
 
 export interface Item {
     id: number;
@@ -11,7 +16,7 @@ export interface Item {
     id_escola: number;
     id_fornecedor: number;
     escola?: Escola;
-    fornecedor: Fornecedor;
+    fornecedor?: Fornecedor;
 }
 
 export interface ItemCreate {
