@@ -1,5 +1,5 @@
 export interface Localizacao {
-    id: number;
+    id_localizacao: number;
     nome_cidade: string;
     uf: string;
 }
@@ -11,4 +11,5 @@ export interface LocalCreate {
 
 export interface LocalRepository {
     create(data: LocalCreate): Promise<Localizacao>;
+    findByNameAndUF(nome_cidade: string, uf: string): Promise<Localizacao | null>;
 }

@@ -7,8 +7,12 @@ class LocalUseCase {
         this.localRepo = new LocalRepoPrisma()
     }
 
-    async create({nome_cidade, uf}: LocalCreate): Promise<Localizacao>{
-        const result = await this.localRepo.create({nome_cidade, uf});
+    async create({nome_cidade, uf}: LocalCreate): Promise<Localizacao> {
+        const verifyIfUserExists = await this.localRepo.findByNameAndUF(nome_cidade, uf);
+        if(verifyIfUserExists) {
+            throw new Error('Local already exists');
+        }
+        const result = await this.localRepo.create({ nome_cidade, uf});
         return result;
     }
 }
