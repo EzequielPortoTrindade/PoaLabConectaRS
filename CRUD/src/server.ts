@@ -10,7 +10,7 @@ app.register(jwt, {
 });
 
 app.register(userRoutes, {
-    prefix: '/users',
+    prefix: '/users', 
 });
 
 app.listen({

@@ -14,3 +14,8 @@ npm run test:watch
 
 pnpm prisma migrate dev --name init
 
+# alterações futuras:
+
+- Quando o projeto for para produção, o schema e o item (num_patrimonio array) deve ser alterado para o postgresql
+
+

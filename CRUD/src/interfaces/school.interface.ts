@@ -1,11 +1,11 @@
 import { Localizacao } from "./local.interface.js";
 
 export interface Escola {
-    id: number;
+    id_escola: number;
     nome: string;
-    rua?: string;
-    numero?: number;
-    bairro?: string;
+    rua: string | null;
+    numero: number | null;
+    bairro: string | null;
     id_localizacao: number;
     localizacao?: Localizacao;
 }
@@ -20,4 +20,5 @@ export interface EscolaCreate {
 
 export interface EscolaRepository {
     create(data: EscolaCreate): Promise<Escola>;
+    findByName(nome: string): Promise<Escola | null>;
 }
