@@ -112,12 +112,16 @@ CREATE TABLE item (
     id_item INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     quantidade INT NOT NULL,
     nome VARCHAR(100) NOT NULL,
-	numero_patrimonio TEXT[],
     categoria tipo_categoria NOT NULL,
     descricao VARCHAR(150),
 	
 	id_escola INTEGER, 
 	id_fornecedor INTEGER, 
+	id_numero_patrimonio INTERGER,
+
+	CONSTRAINT fk_numero_patrimonio
+		FOREIGN KEY (id_numero_patrimonio)
+		REFERENCES numero_patrimonio(id_numero_patrimonio), 
 	
     CONSTRAINT fk_item_escola
         FOREIGN KEY (id_escola)
@@ -126,6 +130,14 @@ CREATE TABLE item (
     CONSTRAINT fk_item_fornecedor
         FOREIGN KEY (id_fornecedor)
         REFERENCES fornecedor(id_fornecedor)
+);
+-- =====================
+-- TABELA NUMERO DE PATRIMONIO
+-- =====================
+CREATE TABLE numero_patrimonio (
+	id_numero_patrimonio INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY, 
+	numeor_patrimonio VARCHAR(150),
+	descricao VARCHAR(100)
 );
 
 -- =====================
