@@ -38,7 +38,6 @@ DROP TABLE localizacao CASCADE;
 -- =====================
 
 CREATE TYPE tipo_usuario AS ENUM ('admin', 'professor');
-CREATE TYPE tipo_categoria AS ENUM ('capital', 'consumo');
 
 -- =====================
 -- TABELA LOCALIZACAO
@@ -105,23 +104,17 @@ CREATE TABLE fornecedor (
 );
 
 -- =====================
--- TABELA ITEM
+-- TABELA ITEM CONSUMO
 -- =====================
 
-CREATE TABLE item (
-    id_item INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+CREATE TABLE item_consumo (
+    id_item_consumo INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     quantidade INT NOT NULL,
     nome VARCHAR(100) NOT NULL,
-    categoria tipo_categoria NOT NULL,
     descricao VARCHAR(150),
 	
 	id_escola INTEGER, 
 	id_fornecedor INTEGER, 
-	id_numero_patrimonio INTERGER,
-
-	CONSTRAINT fk_numero_patrimonio
-		FOREIGN KEY (id_numero_patrimonio)
-		REFERENCES numero_patrimonio(id_numero_patrimonio), 
 	
     CONSTRAINT fk_item_escola
         FOREIGN KEY (id_escola)
@@ -132,18 +125,30 @@ CREATE TABLE item (
         REFERENCES fornecedor(id_fornecedor)
 );
 -- =====================
--- TABELA NUMERO DE PATRIMONIO
+-- TABELA ITEM CAPITAL
 -- =====================
-CREATE TABLE numero_patrimonio (
-	id_numero_patrimonio INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY, 
-	numeor_patrimonio VARCHAR(150),
-	descricao VARCHAR(100)
+CREATE TABLE item_capital (
+    id_item_capital INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+	numero_patrimonio VARCHAR(150),
+    descricao VARCHAR(100),
+	
+	id_escola INTEGER, 
+	id_fornecedor INTEGER, 
+	
+    CONSTRAINT fk_item_escola
+        FOREIGN KEY (id_escola)
+        REFERENCES escola(id_escola),
+
+    CONSTRAINT fk_item_fornecedor
+        FOREIGN KEY (id_fornecedor)
+        REFERENCES fornecedor(id_fornecedor)
 );
 
 -- =====================
 -- TABELA COMPRAS
 -- =====================
---entrada
+-- COMPRA FEITA DO USUARIO
 CREATE TABLE compras (
     id_compra INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     quantidade INT NOT NULL,
@@ -152,14 +157,19 @@ CREATE TABLE compras (
     marca VARCHAR(40),
     nota_fiscal VARCHAR(50),
 	
-	 id_item INTEGER, 
 	 id_escolas INTEGER,
 	 id_fornecedor INTEGER, 
-	 
-    CONSTRAINT fk_compras_item
-        FOREIGN KEY (id_item)
-        REFERENCES item(id_item),
+	 id_item_consumo INTEGER,
+	 id_item_capital INTEGER,
 
+	CONSTRAINT fk_compras_item_consumo
+        FOREIGN KEY (id_item_consumo)
+        REFERENCES item(id_item_consumo),
+	 
+    CONSTRAINT fk_compras_item_capital
+        FOREIGN KEY (id_item_capital)
+        REFERENCES item(id_item_capital),
+	
     CONSTRAINT fk_compras_escola
         FOREIGN KEY (id_escola)
         REFERENCES escola(id_escola),
@@ -172,17 +182,23 @@ CREATE TABLE compras (
 -- =====================
 -- TABELA LOG DE SAIDA
 -- =====================
+-- REPITADA DO ITEM DE UMA DETERMINADA ESCOLA
 CREATE TABLE log_saida (
     id_log INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     quantidade INT NOT NULL,
     data_hora TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	
-    id_item INTEGER, 
+    id_item_consumo INTEGER, 
+	id_item_capital INTEGER,
 	id_usuario INTEGER, 
 	
-    CONSTRAINT fk_log_item
-        FOREIGN KEY (id_item)
-        REFERENCES item(id_item),
+    CONSTRAINT fk_log_item_consumo
+        FOREIGN KEY (item_consumo)
+        REFERENCES item(item_consumo),
+	
+	CONSTRAINT fk_log_item_capital
+        FOREIGN KEY (item_capital)
+        REFERENCES item(item_capital),
 
     CONSTRAINT fk_log_usuario
         FOREIGN KEY (id_usuario)
