@@ -84,7 +84,6 @@ model Item {
   id_fornecedor  Int
   fornecedor     Fornecedor     @relation(fields: [id_fornecedor], references: [id_fornecedor])
 
-  // CORREÇÃO: S maiúsculo
   num_patrimonio String[]
 
   compras        Compra[]

@@ -22,4 +22,5 @@ export interface UserCreate {
 export interface UserRepository {
     create(data: UserCreate): Promise<Usuario>;
     findByEmail(email: string): Promise<Usuario | null>;
+    delete(id_usuario: number): Promise<Usuario | null>;
 }

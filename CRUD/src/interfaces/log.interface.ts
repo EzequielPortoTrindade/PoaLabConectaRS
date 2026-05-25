@@ -3,7 +3,7 @@ import { Escola } from "./school.interface.js";
 import { Usuario } from "./user.interface.js";
 
 export interface Saida {
-    id: number;
+    id_log: number;
     descricao: string;
     data_saida: Date;
     id_usuario: number;
@@ -15,7 +15,6 @@ export interface Saida {
 }
 
 export interface SaidaCreate {
-    id: number;
     descricao: string;
     data_saida: Date;
     id_usuario: number;
@@ -25,4 +24,6 @@ export interface SaidaCreate {
 
 export interface SaidaRepository {
     create(data: SaidaCreate): Promise<Saida>;
+    findById(id_log: number): Promise<Saida | null>;
+    delete(id_log: number): Promise<Saida | null>;
 }

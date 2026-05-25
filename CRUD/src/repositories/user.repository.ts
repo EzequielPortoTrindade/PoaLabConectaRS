@@ -23,6 +23,20 @@ class UserRepoPrisma implements UserRepository{
         });
         return result || null;
     }
+
+    async delete(id_usuario: number): Promise<Usuario | null> {
+            const exists = await prisma.usuario.findFirst({
+                where: { id_usuario }
+            });
+    
+            if (!exists) return null;
+    
+            const result = await prisma.usuario.delete({
+                where: { id_usuario }
+            });
+    
+            return result;
+        }
 }
 
 export { UserRepoPrisma };

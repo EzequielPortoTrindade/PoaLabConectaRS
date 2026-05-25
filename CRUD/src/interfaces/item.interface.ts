@@ -10,7 +10,7 @@ export interface Item {
     descricao: string | null;
     id_escola: number;
     id_fornecedor: number;
-    num_patrimonio: string[];
+    num_patrimonio?: string[];
     escola?: Escola;
     fornecedor?: Fornecedor;
 }
@@ -19,12 +19,13 @@ export interface ItemCreate {
     quantidade: number;
     nome: string;
     categoria: tipo_categoria;
-    descricao: string
+    descricao?: string;
     id_escola: number;
     id_fornecedor: number;
-    num_patrimonio: string[];
+    num_patrimonio?: string[];
 }
 
 export interface ItemRepository {
     create(data: ItemCreate): Promise<Item>;
+    findByName(nome: string): Promise<Item | null>;
 }
