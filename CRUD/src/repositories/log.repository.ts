@@ -9,7 +9,8 @@ class SaidaRepoPrisma implements SaidaRepository {
                 descricao: data.descricao,
                 data_saida: data.data_saida,
                 id_usuario: data.id_usuario,
-                id_item: data.id_item,
+                id_itemCapital: data.id_itemCapital,
+                id_itemConsumo: data.id_itemConsumo,
                 id_escola: data.id_escola
             }
         });

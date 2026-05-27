@@ -21,6 +21,29 @@ class LocalRepoPrisma implements LocalRepository{
         });
         return result || null;
     }
+
+    async findById(id_localizacao: number): Promise<Localizacao | null>{
+                const result = await prisma.localizacao.findFirst({
+                    where: {
+                        id_localizacao
+                    }
+                });
+                return result || null;
+            }
+
+    async delete(id_localizacao: number): Promise<Localizacao | null> {
+                const exists = await prisma.localizacao.findFirst({
+                    where: { id_localizacao }
+                });
+        
+                if (!exists) return null;
+        
+                const result = await prisma.localizacao.delete({
+                    where: { id_localizacao }
+                });
+        
+                return result;
+            }
 }
 
 export { LocalRepoPrisma };

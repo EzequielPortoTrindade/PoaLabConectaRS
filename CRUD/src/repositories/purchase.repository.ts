@@ -2,7 +2,6 @@ import { prisma } from "../db/prisma-client.js";
 import { Compra, CompraCreate, CompraRepository } from "../interfaces/purchase.interface.js";
 
 class CompraRepoPrisma implements CompraRepository {
-
     async create(data: CompraCreate): Promise<Compra> {
         const result = await prisma.compra.create({
             data: {
@@ -13,7 +12,8 @@ class CompraRepoPrisma implements CompraRepository {
                 nota_fiscal: data.nota_fiscal,
                 id_usuario: data.id_usuario,
                 id_fornecedor: data.id_fornecedor,
-                id_item: data.id_item,
+                id_itemCapital: data.id_itemCapital,
+                id_itemConsumo: data.id_itemConsumo,
                 id_escola: data.id_escola
             }
         });
@@ -29,6 +29,20 @@ class CompraRepoPrisma implements CompraRepository {
         });
         return result;
     }
+
+    async delete(id_compra: number): Promise<Compra | null> {
+                const exists = await prisma.compra.findFirst({
+                    where: { id_compra }
+                });
+        
+                if (!exists) return null;
+        
+                const result = await prisma.compra.delete({
+                    where: { id_compra }
+                });
+        
+                return result;
+            }
 }
 
 export { CompraRepoPrisma };

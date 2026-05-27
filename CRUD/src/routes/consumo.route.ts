@@ -1,33 +1,29 @@
 import { FastifyInstance } from "fastify";
-import { ItemUseCase } from "../usecases/item.usecase.js";
-import { ItemCreate } from "../interfaces/item.interface.js";
+import { ItemConsumoUseCase } from "../usecases/consumo.usecase.js";
+import { ItemConsumoCreate } from "../interfaces/consumo.interface.js";
 import { authMiddleware } from "../middleware/auth.middleware.js";
 
-export async function itemRoutes(fastify: FastifyInstance) {
-    const itemUseCase = new ItemUseCase();
+export async function itemConsumoRoutes(fastify: FastifyInstance) {
+    const itemUseCase = new ItemConsumoUseCase();
 
     fastify.addHook("preHandler", authMiddleware);
 
-    fastify.post<{ Body: ItemCreate }>("/", async (req, reply) => {
+    fastify.post<{ Body: ItemConsumoCreate }>("/", async (req, reply) => {
         const {
             quantidade,
             nome,
-            categoria,
             descricao,
             id_escola,
-            id_fornecedor,
-            num_patrimonio
+            id_fornecedor
         } = req.body;
 
         try {
             const data = await itemUseCase.create({
                 quantidade,
                 nome,
-                categoria,
                 descricao,
                 id_escola,
-                id_fornecedor,
-                num_patrimonio
+                id_fornecedor
             });
 
             return reply.send(data);

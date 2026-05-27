@@ -15,10 +15,20 @@ class UserRepoPrisma implements UserRepository{
         });
         return result;
     }
+
     async findByEmail(email: string): Promise<Usuario | null>{
         const result = await prisma.usuario.findFirst({
             where: {
                 email
+            }
+        });
+        return result || null;
+    }
+
+    async findById(id_usuario: number): Promise<Usuario | null>{
+        const result = await prisma.usuario.findFirst({
+            where: {
+               id_usuario 
             }
         });
         return result || null;

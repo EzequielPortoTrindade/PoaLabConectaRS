@@ -1,4 +1,5 @@
-import { Item } from "./item.interface.js";
+import { Item_Consumo } from "./consumo.interface.js";
+import { Item_Capital } from "./capital.interface.js";
 import { Escola } from "./school.interface.js";
 import { Usuario } from "./user.interface.js";
 
@@ -7,10 +8,12 @@ export interface Saida {
     descricao: string;
     data_saida: Date;
     id_usuario: number;
-    id_item: number;
+    id_itemConsumo: number;
+    id_itemCapital: number;
     id_escola: number;
     usuario?: Usuario;
-    item?: Item;
+    item_capital?: Item_Capital;
+    item_consumo?: Item_Consumo;
     escola?: Escola;
 }
 
@@ -18,7 +21,8 @@ export interface SaidaCreate {
     descricao: string;
     data_saida: Date;
     id_usuario: number;
-    id_item: number;
+    id_itemConsumo: number;
+    id_itemCapital: number;
     id_escola: number;
 }
 

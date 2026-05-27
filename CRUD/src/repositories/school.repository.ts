@@ -24,14 +24,28 @@ class EscolaRepoPrisma implements EscolaRepository{
         return result;
     }
 
-    // async findById(id_escola: number): Promise<Escola | null> {
-    //     const result = await prisma.escola.findFirst({
-    //         where: {
-    //             id_escola
-    //         }
-    //     });
-    //     return result;
-    // }
+    async findById(id_escola: number): Promise<Escola | null> {
+        const result = await prisma.escola.findFirst({
+            where: {
+                id_escola
+            }
+        });
+        return result;
+    }
+
+    async delete(id_escola: number): Promise<Escola | null> {
+                const exists = await prisma.escola.findFirst({
+                    where: { id_escola }
+                });
+        
+                if (!exists) return null;
+        
+                const result = await prisma.escola.delete({
+                    where: { id_escola }
+                });
+        
+                return result;
+            }
 }
 
 export { EscolaRepoPrisma };

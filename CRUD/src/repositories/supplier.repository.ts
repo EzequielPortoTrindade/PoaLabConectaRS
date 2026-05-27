@@ -24,6 +24,29 @@ class FornecedorRepoPrisma implements FornecedorRepository{
         });
         return result || null;
     }
+
+    async findById(id_fornecedor: number): Promise<Fornecedor | null>{
+            const result = await prisma.fornecedor.findFirst({
+                where: {
+                    id_fornecedor
+                }
+            });
+            return result || null;
+        }
+    
+    async delete(id_fornecedor: number): Promise<Fornecedor | null> {
+            const exists = await prisma.fornecedor.findFirst({
+                where: { id_fornecedor }
+            });
+    
+            if (!exists) return null;
+    
+            const result = await prisma.fornecedor.delete({
+                where: { id_fornecedor }
+            });
+    
+            return result;
+        }
 }
 
 export { FornecedorRepoPrisma };
