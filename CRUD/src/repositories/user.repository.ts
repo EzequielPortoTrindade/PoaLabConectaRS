@@ -2,7 +2,8 @@ import { tipo_usuario } from "@prisma/client";
 import { prisma } from "../db/prisma-client.js";
 import { Usuario, UserCreate, UserRepository } from "../interfaces/user.interface.js";
 
-class UserRepoPrisma implements UserRepository{
+class UserRepoPrisma implements UserRepository {
+    
     async create(data: UserCreate): Promise<Usuario> {
         const result = await prisma.usuario.create({
             data: {
@@ -16,37 +17,27 @@ class UserRepoPrisma implements UserRepository{
         return result;
     }
 
-    async findByEmail(email: string): Promise<Usuario | null>{
+    async findByEmail(email: string): Promise<Usuario | null> {
         const result = await prisma.usuario.findFirst({
-            where: {
-                email
-            }
+            where: { email }
         });
-        return result || null;
+        return result; 
     }
 
-    async findById(id_usuario: number): Promise<Usuario | null>{
+    async findById(id_usuario: number): Promise<Usuario | null> {
         const result = await prisma.usuario.findFirst({
-            where: {
-               id_usuario 
-            }
+            where: { id_usuario }
         });
-        return result || null;
+        return result; 
     }
 
-    async delete(id_usuario: number): Promise<Usuario | null> {
-            const exists = await prisma.usuario.findFirst({
-                where: { id_usuario }
-            });
-    
-            if (!exists) return null;
-    
-            const result = await prisma.usuario.delete({
-                where: { id_usuario }
-            });
-    
-            return result;
-        }
+    async delete(id_usuario: number): Promise<Usuario> {
+        const result = await prisma.usuario.delete({
+            where: { id_usuario }
+        });
+        
+        return result;
+    }
 }
 
 export { UserRepoPrisma };

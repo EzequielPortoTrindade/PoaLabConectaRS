@@ -1,7 +1,8 @@
 import { prisma } from "../db/prisma-client.js";
 import { Escola, EscolaCreate, EscolaRepository } from "../interfaces/school.interface.js";
 
-class EscolaRepoPrisma implements EscolaRepository{
+class EscolaRepoPrisma implements EscolaRepository {
+    
     async create(data: EscolaCreate): Promise<Escola> {
         const result = await prisma.escola.create({
             data: {
@@ -15,37 +16,30 @@ class EscolaRepoPrisma implements EscolaRepository{
         return result;
     }
 
-    async findByName(nome: string): Promise<Escola | null> {
-        const result = await prisma.escola.findFirst({
-            where: {
-                nome
-            }
-        });
-        return result;
-    }
-
     async findById(id_escola: number): Promise<Escola | null> {
         const result = await prisma.escola.findFirst({
+            where: { id_escola }
+        });
+        return result;
+    }
+
+    async findByNameAndLocal(nome: string, id_localizacao: number): Promise<Escola | null> {
+        const result = await prisma.escola.findFirst({
             where: {
-                id_escola
+                nome,
+                id_localizacao
             }
         });
         return result;
     }
 
-    async delete(id_escola: number): Promise<Escola | null> {
-                const exists = await prisma.escola.findFirst({
-                    where: { id_escola }
-                });
+    async delete(id_escola: number): Promise<Escola> {
+        const result = await prisma.escola.delete({
+            where: { id_escola }
+        });
         
-                if (!exists) return null;
-        
-                const result = await prisma.escola.delete({
-                    where: { id_escola }
-                });
-        
-                return result;
-            }
+        return result;
+    }
 }
 
 export { EscolaRepoPrisma };

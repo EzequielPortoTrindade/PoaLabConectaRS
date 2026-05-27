@@ -13,7 +13,8 @@ export async function saidaRoutes(fastify: FastifyInstance) {
             descricao,
             data_saida,
             id_usuario,
-            id_item,
+            id_itemConsumo,
+            id_itemCapital,
             id_escola
         } = req.body;
 
@@ -22,7 +23,8 @@ export async function saidaRoutes(fastify: FastifyInstance) {
                 descricao,
                 data_saida,
                 id_usuario,
-                id_item,
+                id_itemConsumo,
+                id_itemCapital,
                 id_escola
             });
 
@@ -35,15 +37,4 @@ export async function saidaRoutes(fastify: FastifyInstance) {
     fastify.get("/", async (req, reply) => {
         return reply.send({ hello: "saida routes" });
     });
-
-    // fastify.delete<{ Params: { id_log: number } }>("/:id_log", async (req, reply) => {
-    //     const { id_log } = req.params;
-
-    //     try {
-    //         const data = await saidaUseCase.delete(Number(id_log));
-    //         return reply.send(data);
-    //     } catch (error) {
-    //         return reply.send(error);
-    //     }
-    // });
 }

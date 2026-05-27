@@ -34,7 +34,7 @@ class ItemCapitalRepoPrisma implements ItemCapitalRepository{
                 return result || null;
             }
 
-        async delete(id_itemCapital: number): Promise<Item_Capital | null> {
+        async delete(id_itemCapital: number): Promise<Item_Capital> {
                         const exists = await prisma.item_Capital.findFirst({
                             where: { id_itemCapital }
                         });

@@ -1,43 +1,36 @@
 import { Usuario, UserCreate, UserRepository } from "../interfaces/user.interface.js";
-import { UserRepoPrisma } from "../repositories/user.repository.js";
 
 class UserUseCase {
-    
-    private userRepo: UserRepository
 
-    constructor(){
-        this.userRepo = new UserRepoPrisma()
-    }
+    constructor(private userRepo: UserRepository) {}
 
-    async create({
-        nome, 
-        email, 
-        senha, 
-        tipo, 
-        id_escola
-        }: UserCreate): Promise<Usuario>{
-
+    async create({ nome, email, senha, tipo, id_escola }: UserCreate): Promise<Usuario> {
         const verifyIfUserExists = await this.userRepo.findByEmail(email);
 
-        if(verifyIfUserExists) {
+        if (verifyIfUserExists) {
             throw new Error('User already exists');
         }
 
-        const result = await this.userRepo.create({nome, email, senha, tipo, id_escola});
-        
-        return result;
+        return await this.userRepo.create({ nome, email, senha, tipo, id_escola });
+    }
 
+    async findByEmail(email: string): Promise<Usuario | null> {
+        return await this.userRepo.findByEmail(email);
+    }
+
+    async findById(id_usuario: number): Promise<Usuario | null> {
+        return await this.userRepo.findById(id_usuario);
     }
 
     async delete(id_usuario: number): Promise<Usuario> {
-            const deleted = await this.userRepo.delete(id_usuario);
-    
-            if (!deleted) {
-                throw new Error("User not found");
-            }
-    
-            return deleted;
+        const userExists = await this.userRepo.findById(id_usuario);
+        
+        if (!userExists) {
+            throw new Error("User not found");
         }
-};
+
+        return await this.userRepo.delete(id_usuario);
+    }
+}
 
 export { UserUseCase };

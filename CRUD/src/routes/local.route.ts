@@ -5,9 +5,14 @@ import { authMiddleware } from "../middleware/auth.middleware.js";
 
 export async function localRoutes (fastify: FastifyInstance){
     const localUseCase = new LocalUseCase();
+
     fastify.addHook('preHandler', authMiddleware);
+
     fastify.post<{Body: LocalCreate}>('/', async (req, reply) => {
-        const {nome_cidade, uf} = req.body
+        const {
+            nome_cidade, 
+            uf
+            } = req.body
         try {
             const data = await localUseCase.create({
                 nome_cidade,
@@ -19,6 +24,6 @@ export async function localRoutes (fastify: FastifyInstance){
         }
     });
     fastify.get('/', (req, reply) => {
-        reply.send({ hello: 'world'});
+        reply.send({ hello: 'local route'});
     });
 }

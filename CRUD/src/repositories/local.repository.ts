@@ -1,7 +1,8 @@
 import { prisma } from "../db/prisma-client.js";
 import { Localizacao, LocalCreate, LocalRepository } from "../interfaces/local.interface.js";
 
-class LocalRepoPrisma implements LocalRepository{
+class LocalRepoPrisma implements LocalRepository {
+    
     async create(data: LocalCreate): Promise<Localizacao> {
         const result = await prisma.localizacao.create({
             data: {
@@ -12,38 +13,32 @@ class LocalRepoPrisma implements LocalRepository{
         return result;
     }
 
-    async findByNameAndUF(nome_cidade: string, uf: string): Promise<Localizacao | null>{
+    async findByNameAndUF(nome_cidade: string, uf: string): Promise<Localizacao | null> {
         const result = await prisma.localizacao.findFirst({
-           where: {
-            nome_cidade,
-            uf
-           } 
+            where: {
+                nome_cidade,
+                uf
+            } 
         });
-        return result || null;
+        return result; 
     }
 
-    async findById(id_localizacao: number): Promise<Localizacao | null>{
-                const result = await prisma.localizacao.findFirst({
-                    where: {
-                        id_localizacao
-                    }
-                });
-                return result || null;
+    async findById(id_localizacao: number): Promise<Localizacao | null> {
+        const result = await prisma.localizacao.findFirst({
+            where: {
+                id_localizacao
             }
+        });
+        return result; 
+    }
 
-    async delete(id_localizacao: number): Promise<Localizacao | null> {
-                const exists = await prisma.localizacao.findFirst({
-                    where: { id_localizacao }
-                });
+    async delete(id_localizacao: number): Promise<Localizacao> {
+        const result = await prisma.localizacao.delete({
+            where: { id_localizacao }
+        });
         
-                if (!exists) return null;
-        
-                const result = await prisma.localizacao.delete({
-                    where: { id_localizacao }
-                });
-        
-                return result;
-            }
+        return result;
+    }
 }
 
 export { LocalRepoPrisma };

@@ -20,5 +20,7 @@ export interface EscolaCreate {
 
 export interface EscolaRepository {
     create(data: EscolaCreate): Promise<Escola>;
-    findByName(nome: string): Promise<Escola | null>;
+    findByNameAndLocal(nome: string, id_localizacao: number): Promise<Escola | null>;
+    findById(id_escola: number): Promise<Escola | null>;
+    delete(id_escola: number): Promise<Escola>;
 }
