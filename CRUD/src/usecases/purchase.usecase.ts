@@ -1,13 +1,11 @@
 import { Compra, CompraCreate, CompraRepository } from "../interfaces/purchase.interface.js";
-import { CompraRepoPrisma } from "../repositories/purchase.repository.js";
 
 class CompraUseCase {
-    private compraRepo: CompraRepository;
 
-    constructor() {
-        this.compraRepo = new CompraRepoPrisma();
-    }
+    // Injeção de dependência via construtor (estilo TypeScript abreviado)
+    constructor(private compraRepo: CompraRepository) {}
 
+    // CREATE - Criar uma nova compra
     async create({
         quantidade,
         data_compra,
@@ -16,17 +14,14 @@ class CompraUseCase {
         nota_fiscal,
         id_usuario,
         id_fornecedor,
-        id_item,
+        id_itemConsumo,
+        id_itemCapital,
         id_escola
     }: CompraCreate): Promise<Compra> {
+        
+        // Se no futuro você quiser validar duplicidade ou dados, a lógica entra aqui.
 
-        /*const verifyIfCompraExists = await this.compraRepo.findById(id_compra);
-
-        if (verifyIfCompraExists) {
-            throw new Error("Fornecedor already exists");
-        }*/
-
-        const result = await this.compraRepo.create({
+        return await this.compraRepo.create({
             quantidade,
             data_compra,
             valor_unitario,
@@ -34,11 +29,32 @@ class CompraUseCase {
             nota_fiscal,
             id_usuario,
             id_fornecedor,
-            id_item,
+            id_itemConsumo,
+            id_itemCapital,
             id_escola
         });
+    }
 
-        return result;
+    // FIND BY ID - Buscar compra por ID
+    async findById(id_compra: number): Promise<Compra | null> {
+        return await this.compraRepo.findById(id_compra);
+    }
+
+    // DELETE - Deletar uma compra
+    async delete(id_compra: number): Promise<Compra> {
+        const compraExists = await this.compraRepo.findById(id_compra);
+
+        if (!compraExists) {
+            throw new Error("Compra not found"); 
+        }
+
+        const deletedCompra = await this.compraRepo.delete(id_compra);
+        
+        if (!deletedCompra) {
+            throw new Error("Compra not found");
+        }
+
+        return deletedCompra;
     }
 }
 

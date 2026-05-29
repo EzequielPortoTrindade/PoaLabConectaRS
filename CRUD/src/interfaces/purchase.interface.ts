@@ -40,4 +40,5 @@ export interface CompraCreate {
 export interface CompraRepository {
     create(data: CompraCreate): Promise<Compra>;
     findById(id_compra: number): Promise<Compra | null>;
+    delete(id_compra: number): Promise<Compra | null>;
 }

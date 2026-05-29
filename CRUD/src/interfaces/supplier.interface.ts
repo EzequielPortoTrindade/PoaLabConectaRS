@@ -23,4 +23,6 @@ export interface FornecedorCreate {
 export interface FornecedorRepository {
     create(data: FornecedorCreate): Promise<Fornecedor>;
     findByCNPJ(cnpj: string): Promise<Fornecedor | null>;
+    findById(id_fornecedor: number): Promise<Fornecedor | null>;
+    delete(id_fornecedor: number): Promise<Fornecedor | null>;
 }

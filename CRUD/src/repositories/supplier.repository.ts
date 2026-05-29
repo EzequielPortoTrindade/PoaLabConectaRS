@@ -22,7 +22,7 @@ class FornecedorRepoPrisma implements FornecedorRepository{
                 cnpj
             }
         });
-        return result || null;
+        return result;
     }
 
     async findById(id_fornecedor: number): Promise<Fornecedor | null>{
@@ -31,16 +31,10 @@ class FornecedorRepoPrisma implements FornecedorRepository{
                     id_fornecedor
                 }
             });
-            return result || null;
+            return result;
         }
     
     async delete(id_fornecedor: number): Promise<Fornecedor | null> {
-            const exists = await prisma.fornecedor.findFirst({
-                where: { id_fornecedor }
-            });
-    
-            if (!exists) return null;
-    
             const result = await prisma.fornecedor.delete({
                 where: { id_fornecedor }
             });

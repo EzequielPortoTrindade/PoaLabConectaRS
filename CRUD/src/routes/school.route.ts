@@ -32,4 +32,48 @@ export async function escolaRoutes(fastify: FastifyInstance) {
             return reply.status(message === 'Escola not found' ? 404 : 500).send({ message });
         }
     });
+
+    // GET - Buscar por ID
+    fastify.get<{ Params: { id: string } }>('/:id', async (req, reply) => {
+        try {
+            const id = Number(req.params.id);
+            
+            // Tratamento contra IDs inválidos (NaN) enviado na URL
+            if (isNaN(id)) {
+                return reply.status(400).send({ message: 'ID inválido' });
+            }
+
+            const user = await escolaUseCase.findById(id);
+
+            if (!user) {
+                return reply.status(404).send({ message: 'Usuário não encontrado' });
+            }
+
+            return reply.status(200).send(user);
+        } catch (error) {
+            return reply.status(500).send({ message: 'Erro ao buscar usuário' });
+        }
+    });
+
+    // // GET - Buscar por ID
+    // fastify.get<{ Params: { nome: string, id_localizacao: number } }>('/:id', async (req, reply) => {
+    //     try {
+    //         const id = Number(req.params.id);
+            
+    //         // Tratamento contra IDs inválidos (NaN) enviado na URL
+    //         if (isNaN(id)) {
+    //             return reply.status(400).send({ message: 'ID inválido' });
+    //         }
+
+    //         const user = await escolaUseCase.findById(id);
+
+    //         if (!user) {
+    //             return reply.status(404).send({ message: 'Usuário não encontrado' });
+    //         }
+
+    //         return reply.status(200).send(user);
+    //     } catch (error) {
+    //         return reply.status(500).send({ message: 'Erro ao buscar usuário' });
+    //     }
+    // });
 }

@@ -23,4 +23,6 @@ export interface ItemConsumoCreate {
 export interface ItemConsumoRepository {
     create(data: ItemConsumoCreate): Promise<Item_Consumo>;
     findByName(nome: string): Promise<Item_Consumo | null>;
+    findById(id_itemConsumo: number): Promise<Item_Consumo | null>;
+    delete(id_itemConsumo: number): Promise<Item_Consumo | null>;
 }

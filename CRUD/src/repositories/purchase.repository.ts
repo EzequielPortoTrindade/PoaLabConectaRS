@@ -31,18 +31,12 @@ class CompraRepoPrisma implements CompraRepository {
     }
 
     async delete(id_compra: number): Promise<Compra | null> {
-                const exists = await prisma.compra.findFirst({
-                    where: { id_compra }
-                });
-        
-                if (!exists) return null;
-        
-                const result = await prisma.compra.delete({
-                    where: { id_compra }
-                });
-        
-                return result;
-            }
+            const result = await prisma.compra.delete({
+                where: { id_compra }
+            });
+            
+            return result;
+        }
 }
 
 export { CompraRepoPrisma };

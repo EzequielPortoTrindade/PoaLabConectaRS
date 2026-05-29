@@ -22,5 +22,5 @@ export interface EscolaRepository {
     create(data: EscolaCreate): Promise<Escola>;
     findByNameAndLocal(nome: string, id_localizacao: number): Promise<Escola | null>;
     findById(id_escola: number): Promise<Escola | null>;
-    delete(id_escola: number): Promise<Escola>;
+    delete(id_escola: number): Promise<Escola | null>;
 }

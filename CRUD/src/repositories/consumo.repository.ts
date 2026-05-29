@@ -21,7 +21,7 @@ class ItemConsumoRepoPrisma implements ItemConsumoRepository{
                 nome
                } 
             });
-            return result || null;
+            return result;
         }
 
         async findById(id_itemConsumo: number): Promise<Item_Consumo | null>{
@@ -30,22 +30,17 @@ class ItemConsumoRepoPrisma implements ItemConsumoRepository{
                         id_itemConsumo
                     }
                 });
-                return result || null;
+                return result;
             }
 
         async delete(id_itemConsumo: number): Promise<Item_Consumo | null> {
-                        const exists = await prisma.item_Consumo.findFirst({
-                            where: { id_itemConsumo }
-                        });
                 
-                        if (!exists) return null;
+             const result = await prisma.item_Consumo.delete({
+                 where: { id_itemConsumo }
+            });
                 
-                        const result = await prisma.item_Consumo.delete({
-                            where: { id_itemConsumo }
-                        });
-                
-                        return result;
-                    }
+            return result;
+        }
 }
 
 export { ItemConsumoRepoPrisma };

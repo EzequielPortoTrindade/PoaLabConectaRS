@@ -28,12 +28,6 @@ class SaidaRepoPrisma implements SaidaRepository {
     }
 
     async delete(id_log: number): Promise<Saida | null> {
-        const exists = await prisma.log_Saidas.findFirst({
-            where: { id_log }
-        });
-
-        if (!exists) return null;
-
         const result = await prisma.log_Saidas.delete({
             where: { id_log }
         });

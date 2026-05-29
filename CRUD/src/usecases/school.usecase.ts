@@ -26,7 +26,7 @@ class EscolaUseCase {
     }
 
     // Deletar escola
-    async delete(id_escola: number): Promise<Escola> {
+    async delete(id_escola: number): Promise<Escola | null> {
         const escolaExists = await this.escolaRepo.findById(id_escola);
 
         if (!escolaExists) {

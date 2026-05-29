@@ -1,38 +1,90 @@
 import { FastifyInstance } from "fastify";
-import { ItemConsumoUseCase } from "../usecases/consumo.usecase.js";
+import { ItemConsumoUseCase } from "../usecases/consumo.usecase.js"; // Ajuste o caminho se necessário
 import { ItemConsumoCreate } from "../interfaces/consumo.interface.js";
+import { ItemConsumoRepoPrisma } from "../repositories/consumo.repository.js"; // Importando o repositório Prisma
 import { authMiddleware } from "../middleware/auth.middleware.js";
 
 export async function itemConsumoRoutes(fastify: FastifyInstance) {
-    const itemUseCase = new ItemConsumoUseCase();
+    const itemConsumoRepo = new ItemConsumoRepoPrisma();
+    const itemConsumoUseCase = new ItemConsumoUseCase(itemConsumoRepo);
 
     fastify.addHook("preHandler", authMiddleware);
 
+    // POST - Criar Item de Consumo
     fastify.post<{ Body: ItemConsumoCreate }>("/", async (req, reply) => {
-        const {
-            quantidade,
-            nome,
-            descricao,
-            id_escola,
-            id_fornecedor
-        } = req.body;
-
         try {
-            const data = await itemUseCase.create({
-                quantidade,
-                nome,
-                descricao,
-                id_escola,
-                id_fornecedor
-            });
-
-            return reply.send(data);
+            const data = await itemConsumoUseCase.create(req.body);
+            return reply.status(201).send(data);
         } catch (error) {
-            return reply.send(error);
+            const message = error instanceof Error ? error.message : "Erro interno";
+            
+            if (message === "Item Consumo already exists") {
+                return reply.status(409).send({ message });
+            }
+            return reply.status(500).send({ message });
         }
     });
 
+    // DELETE - Deletar Item de Consumo por ID
+    fastify.delete<{ Params: { id: string } }>("/:id", async (req, reply) => {
+        try {
+            const id = Number(req.params.id);
+
+            if (isNaN(id)) {
+                return reply.status(400).send({ message: "ID inválido" });
+            }
+
+            const deletedItem = await itemConsumoUseCase.delete(id);
+            return reply.status(200).send(deletedItem);
+        } catch (error) {
+            const message = error instanceof Error ? error.message : "Erro interno";
+            
+            if (message === "Item Consumo not found") {
+                return reply.status(404).send({ message });
+            }
+            return reply.status(500).send({ message });
+        }
+    });
+
+    // GET - Buscar Item de Consumo por ID
+    fastify.get<{ Params: { id: string } }>("/:id", async (req, reply) => {
+        try {
+            const id = Number(req.params.id);
+
+            if (isNaN(id)) {
+                return reply.status(400).send({ message: "ID inválido" });
+            }
+
+            const item = await itemConsumoUseCase.findById(id);
+
+            if (!item) {
+                return reply.status(404).send({ message: "Item de consumo não encontrado" });
+            }
+
+            return reply.status(200).send(item);
+        } catch (error) {
+            return reply.status(500).send({ message: "Erro ao buscar item de consumo" });
+        }
+    });
+
+    // GET - Buscar Item de Consumo por Nome
+    fastify.get<{ Params: { nome: string } }>("/nome/:nome", async (req, reply) => {
+        try {
+            const { nome } = req.params;
+            const item = await itemConsumoUseCase.findByName(nome);
+
+            if (!item) {
+                return reply.status(404).send({ message: "Item de consumo não encontrado com este nome" });
+            }
+
+            return reply.status(200).send(item);
+        } catch (error) {
+            return reply.status(500).send({ message: "Erro ao buscar item por nome" });
+        }
+    });
+
+    // GET - Rota padrão / checagem
     fastify.get("/", async (req, reply) => {
-        return reply.send({ hello: "item routes" });
+        return reply.status(200).send({ hello: "item consumo routes" });
     });
 }

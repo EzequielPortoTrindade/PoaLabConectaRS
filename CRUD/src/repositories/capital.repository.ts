@@ -22,7 +22,7 @@ class ItemCapitalRepoPrisma implements ItemCapitalRepository{
                     num_patrimonio
                 }
             });
-            return result || null;
+            return result;
         }
 
         async findById(id_itemCapital: number): Promise<Item_Capital | null>{
@@ -31,22 +31,16 @@ class ItemCapitalRepoPrisma implements ItemCapitalRepository{
                         id_itemCapital
                     }
                 });
-                return result || null;
+                return result;
             }
 
-        async delete(id_itemCapital: number): Promise<Item_Capital> {
-                        const exists = await prisma.item_Capital.findFirst({
-                            where: { id_itemCapital }
-                        });
+        async delete(id_itemCapital: number): Promise<Item_Capital | null> {
+            const result = await prisma.item_Capital.delete({
+                where: { id_itemCapital }
+            });
                 
-                        if (!exists) return null;
-                
-                        const result = await prisma.item_Capital.delete({
-                            where: { id_itemCapital }
-                        });
-                
-                        return result;
-                    }
+             return result;
+            }
 }
 
 export { ItemCapitalRepoPrisma };

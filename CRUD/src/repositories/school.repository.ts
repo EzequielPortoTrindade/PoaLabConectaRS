@@ -33,7 +33,7 @@ class EscolaRepoPrisma implements EscolaRepository {
         return result;
     }
 
-    async delete(id_escola: number): Promise<Escola> {
+    async delete(id_escola: number): Promise<Escola | null> {
         const result = await prisma.escola.delete({
             where: { id_escola }
         });

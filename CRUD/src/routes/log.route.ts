@@ -1,40 +1,74 @@
 import { FastifyInstance } from "fastify";
 import { SaidaUseCase } from "../usecases/log.usecase.js";
 import { SaidaCreate } from "../interfaces/log.interface.js";
+import { SaidaRepoPrisma } from "../repositories/log.repository.js"; 
 import { authMiddleware } from "../middleware/auth.middleware.js";
 
 export async function saidaRoutes(fastify: FastifyInstance) {
-    const saidaUseCase = new SaidaUseCase();
+    const saidaRepo = new SaidaRepoPrisma();
+    const saidaUseCase = new SaidaUseCase(saidaRepo);
 
     fastify.addHook("preHandler", authMiddleware);
 
+    // POST - Registrar uma nova Saída
     fastify.post<{ Body: SaidaCreate }>("/", async (req, reply) => {
-        const {
-            descricao,
-            data_saida,
-            id_usuario,
-            id_itemConsumo,
-            id_itemCapital,
-            id_escola
-        } = req.body;
-
         try {
-            const data = await saidaUseCase.create({
-                descricao,
-                data_saida,
-                id_usuario,
-                id_itemConsumo,
-                id_itemCapital,
-                id_escola
-            });
-
-            return reply.send(data);
+            const data = await saidaUseCase.create(req.body);
+            return reply.status(201).send(data); 
         } catch (error) {
-            return reply.send(error);
+            const message = error instanceof Error ? error.message : "Erro interno ao criar saída";
+            return reply.status(500).send({ message });
         }
     });
 
-    fastify.get("/", async (req, reply) => {
-        return reply.send({ hello: "saida routes" });
+    // DELETE - Deletar uma Saída por ID
+    fastify.delete<{ Params: { id: string } }>("/:id", async (req, reply) => {
+        try {
+            const id = Number(req.params.id);
+
+            if (isNaN(id)) {
+                return reply.status(400).send({ message: "ID inválido" });
+            }
+
+            const deletedSaida = await saidaUseCase.delete(id);
+            return reply.status(200).send(deletedSaida);
+        } catch (error) {
+            const message = error instanceof Error ? error.message : "Erro interno";
+            
+            if (message === "Saida not found") {
+                return reply.status(404).send({ message }); 
+            }
+            return reply.status(500).send({ message });
+        }
     });
+
+    // GET - Buscar Saída por ID
+    fastify.get<{ Params: { id: string } }>("/:id", async (req, reply) => {
+        try {
+            const id = Number(req.params.id);
+
+            if (isNaN(id)) {
+                return reply.status(400).send({ message: "ID inválido" });
+            }
+
+            const readers = await saidaUseCase.findById(id);
+
+            if (!readers) {
+                return reply.status(404).send({ message: "Saída não encontrada" });
+            }
+
+            return reply.status(200).send(readers);
+        } catch (error) {
+            return reply.status(500).send({ message: "Erro ao buscar saída" });
+        }
+    });
+
+    // // GET - Listagem base (Mantido e estruturado)
+    // fastify.get("/", async (req, reply) => {
+    //     try {
+    //         return reply.status(200).send({ hello: "saida routes" });
+    //     } catch (error) {
+    //         return reply.status(500).send({ message: "Erro interno no servidor" });
+    //     }
+    // });
 }

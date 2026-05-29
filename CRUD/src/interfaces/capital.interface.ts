@@ -23,4 +23,6 @@ export interface ItemCapitalCreate {
 export interface ItemCapitalRepository {
     create(data: ItemCapitalCreate): Promise<Item_Capital>;
     findByNumPatrimonio(num_patrimonio: string): Promise<Item_Capital | null>;
+    findById(id_itemCapital: number): Promise<Item_Capital | null>;
+    delete(id_itemCapital: number): Promise<Item_Capital | null>;
 }
