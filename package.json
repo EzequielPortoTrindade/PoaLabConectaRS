@@ -1,0 +1,9 @@
+{
+  "name": "gestao-escolar",
+  "private": true,
+  "scripts": {
+    "dev:front": "pnpm --filter front dev",
+    "dev:back": "pnpm --filter back dev",
+    "dev": "pnpm -r --parallel dev"
+  }
+}
