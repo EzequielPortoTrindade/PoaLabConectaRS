@@ -122,8 +122,8 @@ export default function MovimentacoesPage() {
                     <SelectContent>
                       {itensConsumo.map((item) => (
                         <SelectItem
-                          key={item.id_item}
-                          value={item.id_item.toString()}
+                          key={item.id_item_consumo}
+                          value={item.id_item_consumo.toString()}
                         >
                           {item.nome}
                         </SelectItem>
