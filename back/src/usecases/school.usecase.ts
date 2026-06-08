@@ -25,6 +25,10 @@ class EscolaUseCase {
         return await this.escolaRepo.findByNameAndLocal(nome, id_localizacao);
     }
 
+    async findAll(): Promise<Escola[]> {
+        return this.escolaRepo.findAll()
+    }
+
     // Deletar escola
     async delete(id_escola: number): Promise<Escola | null> {
         const escolaExists = await this.escolaRepo.findById(id_escola);

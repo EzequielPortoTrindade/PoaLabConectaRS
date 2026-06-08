@@ -1,5 +1,6 @@
 import fastify, { FastifyInstance } from "fastify";
 import jwt from "@fastify/jwt";
+import cors from "@fastify/cors"
 
 import { userRoutes } from "./routes/user.route.js";
 import { localRoutes } from "./routes/local.route.js";
@@ -11,6 +12,12 @@ import { compraRoutes } from "./routes/purchase.route.js";
 import { saidaRoutes } from "./routes/log.route.js";
 
 const app: FastifyInstance = fastify({ logger: false });
+
+app.register(cors, {
+  origin: "http://localhost:3000",
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+  credentials: true
+})
 
 app.register(jwt, {
     secret: process.env.JWT_SECRET || "supersecret"

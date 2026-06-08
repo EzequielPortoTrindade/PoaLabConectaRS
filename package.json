@@ -1,5 +1,5 @@
 {
-  "name": "gestao-escolar",
+  "name": "inv-escolar",
   "private": true,
   "scripts": {
     "dev:front": "pnpm --filter front dev",

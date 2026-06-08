@@ -55,6 +55,11 @@ export async function escolaRoutes(fastify: FastifyInstance) {
         }
     });
 
+    fastify.get('/', async (req, reply) => {
+        const data = await escolaUseCase.findAll()
+        return reply.send(data)
+    })
+
     // // GET - Buscar por ID
     // fastify.get<{ Params: { nome: string, id_localizacao: number } }>('/:id', async (req, reply) => {
     //     try {

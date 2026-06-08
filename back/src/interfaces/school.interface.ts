@@ -23,4 +23,5 @@ export interface EscolaRepository {
     findByNameAndLocal(nome: string, id_localizacao: number): Promise<Escola | null>;
     findById(id_escola: number): Promise<Escola | null>;
     delete(id_escola: number): Promise<Escola | null>;
+    findAll(): Promise<Escola[]>;
 }

@@ -30,8 +30,8 @@ yarn-debug.log*
 pnpm-debug.log*
 
 # Ambiente
-.env
-.env.*
+#.env
+#.env.*
 
 # Sistema
 .DS_Store
