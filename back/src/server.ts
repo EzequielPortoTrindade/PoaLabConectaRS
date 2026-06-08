@@ -33,7 +33,22 @@ app.register(fornecedorRoutes, { prefix: "/fornecedores" });
 app.register(compraRoutes, { prefix: "/compras" });
 app.register(saidaRoutes, { prefix: "/saidas" });
 
+app.addHook("preHandler", async (req, reply) => {
+  const url = req.url
+
+  const publicRoutes = ["/users/login", "/users/register"]
+
+  if (publicRoutes.includes(url)) return
+
+  try {
+    await req.jwtVerify()
+  } catch {
+    return reply.status(401).send({ message: "Unauthorized" })
+  }
+})
+
+
 app.listen(
-    { port: 3100 },
+    { port: 3100, host: "0.0.0.0" },
     () => console.log("Server is running on port 3100")
 );
