@@ -7,7 +7,7 @@ export async function userRoutes(fastify: FastifyInstance) {
     const userRepo = new UserRepoPrisma()
     const userUseCase = new UserUseCase(userRepo)
 
-    // POST - Criar usuário (público)
+    // POST - Criar usuário (público - liberado pelo hook global do server.ts)
     fastify.post<{ Body: UserCreate }>("/", async (req, reply) => {
         const { nome, email, senha, tipo, id_escola } = req.body
 
@@ -32,122 +32,87 @@ export async function userRoutes(fastify: FastifyInstance) {
         }
     })
 
-    // LOGIN (público)
+    // LOGIN (público - cria o Cookie HTTPOnly blindado)
     fastify.post("/login", async (req, reply) => {
         const { email } = req.body as any
 
-        const token = fastify.jwt.sign({
-            email
-        })
+        // 1. Gera o token JWT com os dados que você precisa no payload
+        const token = fastify.jwt.sign({ email })
 
-        return reply.send({ token })
+        // 2. Envia o token trancado em um Cookie HTTPOnly
+        return reply
+            .setCookie("token", token, {
+                path: "/",
+                secure: false, // Mude para 'true' quando subir para produção (HTTPS)
+                httpOnly: true, // Bloqueia o acesso via JavaScript no frontend (Adeus XSS!)
+                sameSite: "lax",
+                maxAge: 3600 * 24 // Expira em 1 dia
+            })
+            .send({ 
+                message: "Login efetuado com sucesso!",
+                user: { email } // Retorna os dados do usuário se o front precisar, mas sem o token exposto
+            })
     })
 
-    // DELETE - protegido
-    fastify.delete<{ Params: { id: string } }>(
-        "/:id",
-        {
-            preHandler: async (req, reply) => {
-                try {
-                    await req.jwtVerify()
-                } catch {
-                    return reply.status(401).send({
-                        message: "Unauthorized"
-                    })
-                }
-            }
-        },
-        async (req, reply) => {
-            try {
-                const id = Number(req.params.id)
+    // LOGOUT (Rota bônus importante para limpar o cookie)
+    fastify.post("/logout", async (req, reply) => {
+        return reply
+            .clearCookie("token", { path: "/" })
+            .send({ message: "Logout efetuado com sucesso!" })
+    })
 
-                const deletedUser = await userUseCase.delete(id)
+    // DELETE - protegido (O hook do server.ts valida o token automaticamente)
+    fastify.delete<{ Params: { id: string } }>("/:id", async (req, reply) => {
+        try {
+            const id = Number(req.params.id)
 
-                return reply.status(200).send(deletedUser)
-            } catch (error) {
-                const message =
-                    error instanceof Error ? error.message : "Erro"
+            const deletedUser = await userUseCase.delete(id)
 
-                return reply
-                    .status(message === "User not found" ? 404 : 500)
-                    .send({ message })
-            }
+            return reply.status(200).send(deletedUser)
+        } catch (error) {
+            const message = error instanceof Error ? error.message : "Erro"
+
+            return reply
+                .status(message === "User not found" ? 404 : 500)
+                .send({ message })
         }
-    )
+    })
 
     // GET BY ID - protegido
-    fastify.get<{ Params: { id: string } }>(
-        "/:id",
-        {
-            preHandler: async (req, reply) => {
-                try {
-                    await req.jwtVerify()
-                } catch {
-                    return reply.status(401).send({
-                        message: "Unauthorized"
-                    })
-                }
+    fastify.get<{ Params: { id: string } }>("/:id", async (req, reply) => {
+        try {
+            const id = Number(req.params.id)
+
+            if (isNaN(id)) {
+                return reply.status(400).send({ message: "ID inválido" })
             }
-        },
-        async (req, reply) => {
-            try {
-                const id = Number(req.params.id)
 
-                if (isNaN(id)) {
-                    return reply.status(400).send({
-                        message: "ID inválido"
-                    })
-                }
+            const user = await userUseCase.findById(id)
 
-                const user = await userUseCase.findById(id)
-
-                if (!user) {
-                    return reply.status(404).send({
-                        message: "Usuário não encontrado"
-                    })
-                }
-
-                return reply.status(200).send(user)
-            } catch {
-                return reply.status(500).send({
-                    message: "Erro ao buscar usuário"
-                })
+            if (!user) {
+                return reply.status(404).send({ message: "Usuário não encontrado" })
             }
+
+            return reply.status(200).send(user)
+        } catch {
+            return reply.status(500).send({ message: "Erro ao buscar usuário" })
         }
-    )
+    })
 
     // GET BY EMAIL - protegido
-    fastify.get<{ Params: { email: string } }>(
-        "/email/:email",
-        {
-            preHandler: async (req, reply) => {
-                try {
-                    await req.jwtVerify()
-                } catch {
-                    return reply.status(401).send({
-                        message: "Unauthorized"
-                    })
-                }
+    fastify.get<{ Params: { email: string } }>("/email/:email", async (req, reply) => {
+        try {
+            const { email } = req.params
+
+            const user = await userUseCase.findByEmail(email)
+
+            if (!user) {
+                return reply.status(404).send({ message: "Usuário não encontrado" })
             }
-        },
-        async (req, reply) => {
-            try {
-                const { email } = req.params
 
-                const user = await userUseCase.findByEmail(email)
-
-                if (!user) {
-                    return reply.status(404).send({
-                        message: "Usuário não encontrado"
-                    })
-                }
-
-                return reply.status(200).send(user)
-            } catch {
-                return reply.status(500).send({
-                    message: "Erro ao buscar usuário"
-                })
-            }
+            return reply.status(200).send(user)
+        } catch {
+            return reply.status(500).send({ message: "Erro ao buscar usuário" })
         }
-    )
+    })
 }
