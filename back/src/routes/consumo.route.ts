@@ -1,14 +1,11 @@
 import { FastifyInstance } from "fastify";
-import { ItemConsumoUseCase } from "../usecases/consumo.usecase.js"; // Ajuste o caminho se necessário
+import { ItemConsumoUseCase } from "../usecases/consumo.usecase.js"; 
 import { ItemConsumoCreate } from "../interfaces/consumo.interface.js";
-import { ItemConsumoRepoPrisma } from "../repositories/consumo.repository.js"; // Importando o repositório Prisma
-import { authMiddleware } from "../middleware/auth.middleware.js";
+import { ItemConsumoRepoPrisma } from "../repositories/consumo.repository.js"; 
 
 export async function itemConsumoRoutes(fastify: FastifyInstance) {
     const itemConsumoRepo = new ItemConsumoRepoPrisma();
     const itemConsumoUseCase = new ItemConsumoUseCase(itemConsumoRepo);
-
-    fastify.addHook("preHandler", authMiddleware);
 
     // POST - Criar Item de Consumo
     fastify.post<{ Body: ItemConsumoCreate }>("/", async (req, reply) => {
@@ -83,8 +80,8 @@ export async function itemConsumoRoutes(fastify: FastifyInstance) {
         }
     });
 
-    // GET - Rota padrão / checagem
-    fastify.get("/", async (req, reply) => {
-        return reply.status(200).send({ hello: "item consumo routes" });
-    });
+   fastify.get('/', async (req, reply) => {
+        const data = await itemConsumoUseCase.findAll()
+        return reply.send(data)
+    })
 }

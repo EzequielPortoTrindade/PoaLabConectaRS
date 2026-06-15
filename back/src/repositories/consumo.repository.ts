@@ -32,6 +32,10 @@ class ItemConsumoRepoPrisma implements ItemConsumoRepository{
                 });
                 return result;
             }
+        
+        async findAll(): Promise<Item_Consumo[]> {
+                return prisma.item_Consumo.findMany()
+            }   
 
         async delete(id_itemConsumo: number): Promise<Item_Consumo | null> {
                 

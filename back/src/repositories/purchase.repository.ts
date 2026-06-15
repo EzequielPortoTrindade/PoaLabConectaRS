@@ -30,6 +30,10 @@ class CompraRepoPrisma implements CompraRepository {
         return result;
     }
 
+    async findAll(): Promise<Compra[]> {
+                return prisma.compra.findMany()
+            }
+
     async delete(id_compra: number): Promise<Compra | null> {
             const result = await prisma.compra.delete({
                 where: { id_compra }

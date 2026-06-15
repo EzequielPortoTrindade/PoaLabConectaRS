@@ -25,4 +25,5 @@ export interface FornecedorRepository {
     findByCNPJ(cnpj: string): Promise<Fornecedor | null>;
     findById(id_fornecedor: number): Promise<Fornecedor | null>;
     delete(id_fornecedor: number): Promise<Fornecedor | null>;
+    findAll(): Promise<Fornecedor[]>;
 }

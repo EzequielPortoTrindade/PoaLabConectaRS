@@ -40,6 +40,10 @@ class CompraUseCase {
         return await this.compraRepo.findById(id_compra);
     }
 
+    async findAll(): Promise<Compra[]> {
+            return this.compraRepo.findAll();
+        }
+
     // DELETE - Deletar uma compra
     async delete(id_compra: number): Promise<Compra> {
         const compraExists = await this.compraRepo.findById(id_compra);

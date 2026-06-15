@@ -38,6 +38,10 @@ class ItemConsumoUseCase {
         return await this.itemConsumoRepo.findById(id_itemConsumo);
     }
 
+    async findAll(): Promise<Item_Consumo[]> {
+            return this.itemConsumoRepo.findAll();
+        }
+
     // DELETE - Deletar um item de consumo
     async delete(id_itemConsumo: number): Promise<Item_Consumo> {
         const itemExists = await this.itemConsumoRepo.findById(id_itemConsumo);

@@ -42,6 +42,10 @@ class FornecedorUseCase {
         return await this.fornecedorRepo.findById(id_fornecedor);
     }
 
+    async findAll(): Promise<Fornecedor[]> {
+            return this.fornecedorRepo.findAll();
+        }
+
     // DELETE - Deletar um fornecedor
     async delete(id_fornecedor: number): Promise<Fornecedor> {
         

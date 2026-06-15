@@ -27,6 +27,10 @@ class SaidaRepoPrisma implements SaidaRepository {
         return result;
     }
 
+    async findAll(): Promise<Saida[]> {
+        return prisma.log_Saidas.findMany()
+    }
+
     async delete(id_log: number): Promise<Saida | null> {
         const result = await prisma.log_Saidas.delete({
             where: { id_log }

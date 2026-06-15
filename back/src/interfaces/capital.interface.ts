@@ -25,4 +25,5 @@ export interface ItemCapitalRepository {
     findByNumPatrimonio(num_patrimonio: string): Promise<Item_Capital | null>;
     findById(id_itemCapital: number): Promise<Item_Capital | null>;
     delete(id_itemCapital: number): Promise<Item_Capital | null>;
+    findAll(): Promise<Item_Capital[]>;
 }

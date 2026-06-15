@@ -25,6 +25,10 @@ class LocalUseCase {
         return await this.localRepo.findByNameAndUF(nome_cidade, uf);
     }
 
+    async findAll(): Promise<Localizacao[]> {
+        return this.localRepo.findAll();
+    }
+
     // 4. Deletar local
     async delete(id_localizacao: number): Promise<Localizacao> {
         const localExists = await this.localRepo.findById(id_localizacao);

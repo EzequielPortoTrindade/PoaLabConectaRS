@@ -2,14 +2,10 @@ import { FastifyInstance } from "fastify";
 import { ItemCapitalUseCase } from "../usecases/capital.usecase.js"; 
 import { ItemCapitalCreate } from "../interfaces/capital.interface.js";
 import { ItemCapitalRepoPrisma } from "../repositories/capital.repository.js"; 
-import { authMiddleware } from "../middleware/auth.middleware.js";
 
 export async function itemCapitalRoutes(fastify: FastifyInstance) {
     const itemCapitalRepo = new ItemCapitalRepoPrisma();
     const itemCapitalUseCase = new ItemCapitalUseCase(itemCapitalRepo);
-
-    // Protege todas as rotas de itens de capital com o middleware de autenticação
-    fastify.addHook("preHandler", authMiddleware);
 
     // POST - Criar Item de Capital
     fastify.post<{ Body: ItemCapitalCreate }>("/", async (req, reply) => {
@@ -84,8 +80,8 @@ export async function itemCapitalRoutes(fastify: FastifyInstance) {
         }
     });
 
-    // GET - Rota de checagem ou listagem geral
-    fastify.get("/", async (req, reply) => {
-        return reply.status(200).send({ hello: "item capital routes" });
-    });
+    fastify.get('/', async (req, reply) => {
+        const data = await itemCapitalUseCase.findAll()
+        return reply.send(data)
+    })
 }

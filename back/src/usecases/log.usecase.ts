@@ -30,6 +30,10 @@ class SaidaUseCase {
         return await this.saidaRepo.findById(id_log);
     }
 
+    async findAll(): Promise<Saida[]> {
+        return this.saidaRepo.findAll();
+    }
+
     // DELETE - Deletar um log de saída
     async delete(id_log: number): Promise<Saida> {
 

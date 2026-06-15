@@ -30,4 +30,5 @@ export interface SaidaRepository {
     create(data: SaidaCreate): Promise<Saida>;
     findById(id_log: number): Promise<Saida | null>;
     delete(id_log: number): Promise<Saida | null>;
+    findAll(): Promise<Saida[]>;
 }

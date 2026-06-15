@@ -38,6 +38,10 @@ class ItemCapitalUseCase {
         return await this.itemCapitalRepo.findById(id_itemCapital);
     }
 
+    async findAll(): Promise<Item_Capital[]> {
+        return this.itemCapitalRepo.findAll();
+    }
+
     // DELETE - Deletar um item de capital
     async delete(id_itemCapital: number): Promise<Item_Capital> {
         

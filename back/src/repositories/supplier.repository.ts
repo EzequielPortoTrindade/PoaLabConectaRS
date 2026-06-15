@@ -34,6 +34,10 @@ class FornecedorRepoPrisma implements FornecedorRepository{
             return result;
         }
     
+    async findAll(): Promise<Fornecedor[]> {
+            return prisma.fornecedor.findMany()
+        }
+    
     async delete(id_fornecedor: number): Promise<Fornecedor | null> {
             const result = await prisma.fornecedor.delete({
                 where: { id_fornecedor }
@@ -41,6 +45,7 @@ class FornecedorRepoPrisma implements FornecedorRepository{
     
             return result;
         }
+    
 }
 
 export { FornecedorRepoPrisma };

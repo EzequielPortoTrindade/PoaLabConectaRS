@@ -32,6 +32,10 @@ class LocalRepoPrisma implements LocalRepository {
         return result; 
     }
 
+    async findAll(): Promise<Localizacao[]> {
+            return prisma.localizacao.findMany()
+        }
+
     async delete(id_localizacao: number): Promise<Localizacao> {
         const result = await prisma.localizacao.delete({
             where: { id_localizacao }

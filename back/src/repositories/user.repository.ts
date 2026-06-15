@@ -31,6 +31,10 @@ class UserRepoPrisma implements UserRepository {
         return result; 
     }
 
+    async findAll(): Promise<Usuario[]> {
+        return prisma.usuario.findMany()
+    }
+
     async delete(id_usuario: number): Promise<Usuario | null> {
         const result = await prisma.usuario.delete({
             where: { id_usuario }

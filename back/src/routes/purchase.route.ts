@@ -1,16 +1,12 @@
 import { FastifyInstance } from "fastify";
-import { CompraUseCase } from "../usecases/purchase.usecase.js"; // Ajuste o caminho se necessário
+import { CompraUseCase } from "../usecases/purchase.usecase.js"; 
 import { CompraCreate } from "../interfaces/purchase.interface.js";
-import { CompraRepoPrisma } from "../repositories/purchase.repository.js"; // O arquivo que você mandou
-import { authMiddleware } from "../middleware/auth.middleware.js";
+import { CompraRepoPrisma } from "../repositories/purchase.repository.js"; 
 
 export async function compraRoutes(fastify: FastifyInstance) {
     // Injeção do repositório Prisma no UseCase de Compras
     const compraRepo = new CompraRepoPrisma();
     const compraUseCase = new CompraUseCase(compraRepo);
-
-    // Protege todas as rotas de compras com o middleware de autenticação
-    fastify.addHook('preHandler', authMiddleware);
 
     // POST - Registrar uma nova Compra
     fastify.post<{ Body: CompraCreate }>('/', async (req, reply) => {
@@ -73,4 +69,9 @@ export async function compraRoutes(fastify: FastifyInstance) {
             return reply.status(500).send({ message: 'Erro ao buscar compra' });
         }
     });
+
+    fastify.get('/', async (req, reply) => {
+        const data = await compraUseCase.findAll()
+        return reply.send(data)
+    })
 }

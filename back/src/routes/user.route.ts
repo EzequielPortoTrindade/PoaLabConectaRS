@@ -115,4 +115,9 @@ export async function userRoutes(fastify: FastifyInstance) {
             return reply.status(500).send({ message: "Erro ao buscar usuário" })
         }
     })
+
+    fastify.get('/', async (req, reply) => {
+        const data = await userUseCase.findAll()
+        return reply.send(data)
+    })
 }

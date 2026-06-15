@@ -22,7 +22,11 @@ class UserUseCase {
         return await this.userRepo.findById(id_usuario);
     }
 
-    async delete(id_usuario: number): Promise<Usuario> {
+    async findAll(): Promise<Usuario[]> {
+        return this.userRepo.findAll();
+    }
+
+    async delete(id_usuario: number): Promise<Usuario | null> {
         const userExists = await this.userRepo.findById(id_usuario);
         
         if (!userExists) {

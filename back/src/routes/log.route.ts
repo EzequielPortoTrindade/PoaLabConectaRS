@@ -2,13 +2,10 @@ import { FastifyInstance } from "fastify";
 import { SaidaUseCase } from "../usecases/log.usecase.js";
 import { SaidaCreate } from "../interfaces/log.interface.js";
 import { SaidaRepoPrisma } from "../repositories/log.repository.js"; 
-import { authMiddleware } from "../middleware/auth.middleware.js";
 
 export async function saidaRoutes(fastify: FastifyInstance) {
     const saidaRepo = new SaidaRepoPrisma();
     const saidaUseCase = new SaidaUseCase(saidaRepo);
-
-    fastify.addHook("preHandler", authMiddleware);
 
     // POST - Registrar uma nova Saída
     fastify.post<{ Body: SaidaCreate }>("/", async (req, reply) => {
@@ -62,6 +59,11 @@ export async function saidaRoutes(fastify: FastifyInstance) {
             return reply.status(500).send({ message: "Erro ao buscar saída" });
         }
     });
+
+    fastify.get('/', async (req, reply) => {
+        const data = await saidaUseCase.findAll()
+        return reply.send(data)
+    })
 
     // // GET - Listagem base (Mantido e estruturado)
     // fastify.get("/", async (req, reply) => {

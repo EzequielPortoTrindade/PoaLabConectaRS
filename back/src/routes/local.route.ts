@@ -2,14 +2,10 @@ import { FastifyInstance } from "fastify";
 import { LocalUseCase } from "../usecases/local.usecase.js";
 import { LocalCreate } from "../interfaces/local.interface.js";
 import { LocalRepoPrisma } from "../repositories/local.repository.js"; 
-import { authMiddleware } from "../middleware/auth.middleware.js";
 
 export async function localRoutes(fastify: FastifyInstance) {
     const localRepo = new LocalRepoPrisma();
     const localUseCase = new LocalUseCase(localRepo);
-
-    // Protege todas as rotas com o middleware de autenticação
-    fastify.addHook('preHandler', authMiddleware);
 
     // POST - Criação de Local
     fastify.post<{ Body: LocalCreate }>('/', async (req, reply) => {
@@ -70,4 +66,9 @@ export async function localRoutes(fastify: FastifyInstance) {
             return reply.status(500).send({ message: 'Erro ao buscar local' });
         }
     });
+
+    fastify.get('/', async (req, reply) => {
+        const data = await localUseCase.findAll()
+        return reply.send(data)
+    })
 }

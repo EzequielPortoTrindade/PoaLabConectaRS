@@ -33,6 +33,10 @@ class ItemCapitalRepoPrisma implements ItemCapitalRepository{
                 });
                 return result;
             }
+        
+        async findAll(): Promise<Item_Capital[]> {
+                    return prisma.item_Capital.findMany()
+        }        
 
         async delete(id_itemCapital: number): Promise<Item_Capital | null> {
             const result = await prisma.item_Capital.delete({

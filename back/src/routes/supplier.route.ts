@@ -2,14 +2,10 @@ import { FastifyInstance } from "fastify";
 import { FornecedorUseCase } from "../usecases/supplier.usecase.js";
 import { FornecedorCreate } from "../interfaces/supplier.interface.js";
 import { FornecedorRepoPrisma } from "../repositories/supplier.repository.js"; 
-import { authMiddleware } from "../middleware/auth.middleware.js";
 
 export async function fornecedorRoutes(fastify: FastifyInstance) {
     const fornecedorRepo = new FornecedorRepoPrisma();
     const fornecedorUseCase = new FornecedorUseCase(fornecedorRepo);
-
-    // Protege todas as rotas de fornecedores com o middleware de autenticação
-    fastify.addHook("preHandler", authMiddleware);
 
     // POST - Criar Fornecedor
     fastify.post<{ Body: FornecedorCreate }>("/", async (req, reply) => {
@@ -84,8 +80,8 @@ export async function fornecedorRoutes(fastify: FastifyInstance) {
         }
     });
 
-    // GET - Rota de checagem ou listagem geral
-    fastify.get("/", async (req, reply) => {
-        return reply.status(200).send({ hello: "fornecedor routes" });
-    });
+    fastify.get('/', async (req, reply) => {
+        const data = await fornecedorUseCase.findAll()
+        return reply.send(data)
+    })
 }

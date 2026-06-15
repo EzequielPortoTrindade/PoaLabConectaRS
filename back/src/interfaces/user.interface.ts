@@ -24,4 +24,5 @@ export interface UserRepository {
     findByEmail(email: string): Promise<Usuario | null>;
     findById(id_usuario: number): Promise<Usuario | null>;
     delete(id_usuario: number): Promise<Usuario | null>;
+    findAll(): Promise<Usuario[]>;
 }

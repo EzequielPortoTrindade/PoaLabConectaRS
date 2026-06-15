@@ -14,4 +14,5 @@ export interface LocalRepository {
     findByNameAndUF(nome_cidade: string, uf: string): Promise<Localizacao | null>;
     findById(id_localizacao: number): Promise<Localizacao | null>;
     delete(id_localizacao: number): Promise<Localizacao>;
+    findAll(): Promise<Localizacao[]>;
 }
