@@ -9,9 +9,10 @@ import {
   Pencil,
   Trash2,
   Eye,
-  ArrowDownLeft,
+ 
   ArrowUpRight,
   Download,
+  BookOpen,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -42,13 +43,22 @@ import {
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { PageHeader, StatusBadge } from "@/components/shared"
-import { ultimasMovimentacoes, escolas, itensConsumo } from "@/lib/mock-data"
+import { ultimasMovimentacoes, escolas, itensConsumo, itensCapital } from "@/lib/mock-data"
 import { cn } from "@/lib/utils"
 
 export default function MovimentacoesPage() {
   const [searchTerm, setSearchTerm] = React.useState("")
   const [isCreateDialogOpen, setIsCreateDialogOpen] = React.useState(false)
   const [tipoMovimentacao, setTipoMovimentacao] = React.useState<string>("")
+
+  // form state for creating requests
+  const [itemType, setItemType] = React.useState<'consumo'|'capital'>('consumo')
+  const [selectedConsumoId, setSelectedConsumoId] = React.useState<number | null>(null)
+  const [selectedCapitalId, setSelectedCapitalId] = React.useState<number | null>(null)
+  const [selectedEscolaId, setSelectedEscolaId] = React.useState<number | null>(null)
+  const [quantidade, setQuantidade] = React.useState<number | null>(null)
+  const [observacao, setObservacao] = React.useState<string | null>(null)
+  const currentUserId = 2 // mock current user
 
   const filteredMovimentacoes = ultimasMovimentacoes.filter(
     (mov) =>
@@ -87,16 +97,20 @@ export default function MovimentacoesPage() {
                   <div className="grid grid-cols-2 gap-4">
                     <button
                       type="button"
-                      onClick={() => setTipoMovimentacao("entrada")}
+                      onClick={() => setTipoMovimentacao("emprestimo")}
                       className={cn(
                         "flex items-center justify-center gap-2 rounded-lg border-2 p-4 transition-colors",
-                        tipoMovimentacao === "entrada"
+                        tipoMovimentacao === "emprestimo"
                           ? "border-success bg-success/10 text-success"
                           : "border-border hover:border-muted-foreground"
                       )}
                     >
-                      <ArrowDownLeft className="h-5 w-5" />
-                      <span className="font-medium">Entrada</span>
+                      <img
+                        src="/aperto-de-mao.png"
+                        alt="Aperto de mão"
+                        className="h-5 w-5 object-contain"
+                      />
+                      <span className="font-medium">Emprestimo</span>
                     </button>
                     <button
                       type="button"
@@ -115,21 +129,52 @@ export default function MovimentacoesPage() {
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="item">Item</Label>
-                  <Select>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione o item" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {itensConsumo.map((item) => (
-                        <SelectItem
-                          key={item.id_item_consumo}
-                          value={item.id_item_consumo.toString()}
-                        >
-                          {item.nome}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <div className="flex gap-2 items-center">
+                    <select
+                      value={itemType}
+                      onChange={(e) => setItemType(e.target.value as any)}
+                      className="rounded-md border px-2 py-1"
+                    >
+                      <option value="consumo">Consumo</option>
+                      <option value="capital">Capital</option>
+                    </select>
+                    {itemType === 'consumo' ? (
+                      <Select>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione o item" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {itensConsumo.map((item) => (
+                            <SelectItem
+                              key={item.id_item_consumo}
+                              value={item.id_item_consumo.toString()}
+                              onClick={() => setSelectedConsumoId(item.id_item_consumo)}
+                            >
+                              {item.nome}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    ) : (
+                      <Select>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione o item de capital" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {/* import itensCapital dynamically to avoid heavy bundles */}
+                          {itensCapital.map((item: any) => (
+                            <SelectItem
+                              key={item.id_item_capital}
+                              value={item.id_item_capital.toString()}
+                              onClick={() => setSelectedCapitalId(item.id_item_capital)}
+                            >
+                              {item.nome} — {item.numero_patrimonio}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
+                  </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
@@ -143,6 +188,7 @@ export default function MovimentacoesPage() {
                           <SelectItem
                             key={escola.id_escola}
                             value={escola.id_escola.toString()}
+                            onClick={() => setSelectedEscolaId(escola.id_escola)}
                           >
                             {escola.nome.replace("Escola Municipal ", "")}
                           </SelectItem>
@@ -152,7 +198,7 @@ export default function MovimentacoesPage() {
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="quantidade">Quantidade</Label>
-                    <Input id="quantidade" type="number" placeholder="0" min={1} />
+                    <Input id="quantidade" type="number" placeholder="0" min={1} value={quantidade ?? ''} onChange={(e) => setQuantidade(Number(e.target.value) || null)} />
                   </div>
                 </div>
                 <div className="grid gap-2">
@@ -161,6 +207,8 @@ export default function MovimentacoesPage() {
                     id="observacao"
                     placeholder="Adicione uma observação..."
                     className="resize-none"
+                    value={observacao ?? ''}
+                    onChange={(e) => setObservacao(e.target.value)}
                   />
                 </div>
               </div>
@@ -171,7 +219,42 @@ export default function MovimentacoesPage() {
                 >
                   Cancelar
                 </Button>
-                <Button onClick={() => setIsCreateDialogOpen(false)}>
+                <Button onClick={async () => {
+                  // build payload
+                  const payload: any = {
+                    tipo: tipoMovimentacao || 'saida',
+                    itemType,
+                    id_item_consumo: itemType === 'consumo' ? selectedConsumoId : null,
+                    id_item_capital: itemType === 'capital' ? selectedCapitalId : null,
+                    numero_patrimonio: null,
+                    quantidade: quantidade,
+                    id_escola: selectedEscolaId,
+                    id_usuario: currentUserId,
+                    observacao: observacao,
+                  }
+
+                  if (itemType === 'capital' && payload.id_item_capital) {
+                    const found = itensCapital.find((i: any) => i.id_item_capital === payload.id_item_capital)
+                    payload.numero_patrimonio = found ? found.numero_patrimonio : null
+                  }
+
+                  try {
+                    const res = await fetch('/api/movimentacoes/requests', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify(payload),
+                    })
+                    if (res.ok) {
+                      alert('Solicitação enviada para aprovação do administrador.')
+                    } else {
+                      alert('Falha ao enviar solicitação')
+                    }
+                  } catch (e) {
+                    alert('Erro ao enviar solicitação')
+                  }
+
+                  setIsCreateDialogOpen(false)
+                }}>
                   Registrar
                 </Button>
               </DialogFooter>
