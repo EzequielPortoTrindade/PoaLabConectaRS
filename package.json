@@ -5,5 +5,8 @@
     "dev:front": "pnpm --filter front dev",
     "dev:back": "pnpm --filter back dev",
     "dev": "pnpm -r --parallel dev"
+  },
+  "dependencies": {
+    "zod": "^3.25.76"
   }
 }
