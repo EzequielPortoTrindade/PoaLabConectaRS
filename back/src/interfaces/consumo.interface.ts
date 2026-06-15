@@ -5,6 +5,7 @@ export interface Item_Consumo {
     id_itemConsumo: number;
     quantidade: number;
     nome: string;
+    emprestimo: string | null;
     descricao: string | null;
     id_escola: number;
     id_fornecedor: number;
@@ -15,6 +16,7 @@ export interface Item_Consumo {
 export interface ItemConsumoCreate {
     quantidade: number;
     nome: string;
+    emprestimo: string;
     descricao?: string;
     id_escola: number;
     id_fornecedor: number;

@@ -6,6 +6,7 @@ class ItemCapitalRepoPrisma implements ItemCapitalRepository{
             const result = await prisma.item_Capital.create({
                 data: {
                     nome: data.nome,
+                    emprestimo: data.emprestimo,
                     descricao: data.descricao,
                     id_escola: data.id_escola,
                     id_fornecedor: data.id_fornecedor,

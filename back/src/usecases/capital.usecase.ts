@@ -7,6 +7,7 @@ class ItemCapitalUseCase {
     // CREATE - Criar um novo item de capital com validação de patrimônio
     async create({
         nome,
+        emprestimo,
         descricao,
         id_escola,
         id_fornecedor,
@@ -21,6 +22,7 @@ class ItemCapitalUseCase {
 
         return await this.itemCapitalRepo.create({
             nome,
+            emprestimo,
             descricao,
             id_escola,
             id_fornecedor,

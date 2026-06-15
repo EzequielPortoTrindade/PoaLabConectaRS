@@ -4,6 +4,7 @@ import { Fornecedor } from "./supplier.interface.js";
 export interface Item_Capital {
     id_itemCapital: number;
     nome: string;
+    emprestimo: string | null;
     descricao: string | null;
     id_escola: number;
     id_fornecedor: number;
@@ -14,6 +15,7 @@ export interface Item_Capital {
 
 export interface ItemCapitalCreate {
     nome: string;
+    emprestimo: string;
     descricao: string;
     num_patrimonio: string;
     id_escola: number;

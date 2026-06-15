@@ -7,6 +7,7 @@ class ItemConsumoRepoPrisma implements ItemConsumoRepository{
                 data: {
                     quantidade: data.quantidade,
                     nome: data.nome,
+                    emprestimo: data.emprestimo, 
                     descricao: data.descricao,
                     id_escola: data.id_escola,
                     id_fornecedor: data.id_fornecedor
