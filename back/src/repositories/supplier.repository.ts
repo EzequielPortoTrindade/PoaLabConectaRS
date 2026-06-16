@@ -1,5 +1,5 @@
 import { prisma } from "../db/prisma-client.js";
-import { Fornecedor, FornecedorCreate, FornecedorRepository } from "../interfaces/supplier.interface.js";
+import { Fornecedor, FornecedorCreate, FornecedorRepository } from "../../../shared/supplier.interface.js";
 
 class FornecedorRepoPrisma implements FornecedorRepository{
     async create(data: FornecedorCreate): Promise<Fornecedor> {

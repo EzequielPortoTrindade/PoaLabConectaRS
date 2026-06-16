@@ -7,9 +7,9 @@ datasource db {
   url      = "file:./dev.db"
 }
 
-enum tipo_usuario {
-  admin
-  professor
+enum TipoUsuario {
+  ADMIN
+  PROFESSOR
 }
 
 model Localizacao {
@@ -43,7 +43,7 @@ model Usuario {
   nome       String
   email      String @unique
   senha      String
-  tipo       tipo_usuario
+  tipo       TipoUsuario
 
   id_escola  Int?
   escola     Escola? @relation(fields: [id_escola], references: [id_escola])

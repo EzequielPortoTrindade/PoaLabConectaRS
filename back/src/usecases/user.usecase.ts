@@ -1,4 +1,4 @@
-import { Usuario, UserCreate, UserRepository } from "../interfaces/user.interface.js";
+import { Usuario, UserCreate, UserRepository } from "../../../shared/user.interface.js";
 
 class UserUseCase {
 

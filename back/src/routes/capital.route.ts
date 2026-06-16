@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify";
 import { ItemCapitalUseCase } from "../usecases/capital.usecase.js"; 
-import { ItemCapitalCreate } from "../interfaces/capital.interface.js";
+import { ItemCapitalCreate } from "../../../shared/capital.interface.js";
 import { ItemCapitalRepoPrisma } from "../repositories/capital.repository.js"; 
 
 export async function itemCapitalRoutes(fastify: FastifyInstance) {

@@ -1,4 +1,4 @@
-import { Localizacao, LocalCreate, LocalRepository } from "../interfaces/local.interface.js";
+import { Localizacao, LocalCreate, LocalRepository } from "../../../shared/local.interface.js";
 
 class LocalUseCase {
     // Injeção de Dependência do Repositório

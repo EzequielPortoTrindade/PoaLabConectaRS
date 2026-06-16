@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify"
 import { UserUseCase } from "../usecases/user.usecase.js"
-import { UserCreate } from "../interfaces/user.interface.js"
+import { UserCreate } from "../../../shared/user.interface.js"
 import { UserRepoPrisma } from "../repositories/user.repository.js"
 
 export async function userRoutes(fastify: FastifyInstance) {

@@ -2,10 +2,10 @@
 
 import * as React from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { usePathname } from "next/navigation"
 import {
   LayoutDashboard,
-  Users,
   GraduationCap,
   MapPin,
   School,
@@ -39,7 +39,6 @@ interface NavItem {
 
 const mainNavItems: NavItem[] = [
   { title: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { title: "Usuários", href: "/dashboard/usuarios", icon: Users },
   { title: "Professores", href: "/dashboard/professores", icon: GraduationCap },
   { title: "Localizações", href: "/dashboard/localizacoes", icon: MapPin },
   { title: "Escolas", href: "/dashboard/escolas", icon: School },
@@ -75,31 +74,35 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
       >
         <div className="flex h-full flex-col">
           {/* Logo */}
-          <div className="flex h-16 items-center justify-between border-b border-sidebar-border px-4">
+         <div className="flex h-16 items-center justify-between border-b border-sidebar-border px-4">
             <Link href="/dashboard" className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                <Package className="h-5 w-5" />
-              </div>
+              <Image
+                src="/logo-icon.png"
+                alt="EduStock Logo"
+                width={32}
+                height={32}
+              />
+
               {!collapsed && (
                 <span className="text-lg font-bold text-sidebar-foreground">
                   EduStock
                 </span>
-              )}
-            </Link>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onToggle}
-              className="h-8 w-8 text-sidebar-foreground hover:bg-sidebar-accent"
-            >
-              {collapsed ? (
-                <ChevronRight className="h-4 w-4" />
-              ) : (
-                <ChevronLeft className="h-4 w-4" />
-              )}
-            </Button>
-          </div>
+            )}
+          </Link>
 
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onToggle}
+          className="h-8 w-8 text-sidebar-foreground hover:bg-sidebar-accent"
+        >
+          {collapsed ? (
+          <ChevronRight className="h-4 w-4" />
+        ) : (
+          <ChevronLeft className="h-4 w-4" />
+        )}
+      </Button>
+      </div>
           {/* Navigation */}
           <nav className="flex-1 space-y-1 overflow-y-auto p-2">
             {mainNavItems.map((item) => {

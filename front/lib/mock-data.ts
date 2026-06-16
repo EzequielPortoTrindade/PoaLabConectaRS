@@ -5,10 +5,14 @@ import type {
   ResumoEscola,
   CategoriaDestaque,
   MovimentacaoEstoque,
+  Localizacao,
   Escola,
   Usuario,
+  Fornecedor,
   Professor,
   ItemConsumo,
+  ItemCapital,
+  Compra
 } from "@/types"
 
 // ==========================================
@@ -56,9 +60,20 @@ export const categoriasDestaque: CategoriaDestaque[] = [
   { id_categoria: 4, nome: "Mobiliário", valor: 34878.9, porcentagem: 15 },
 ]
 
+
 // ==========================================
 // DADOS MOCK PARA ENTIDADES
 // ==========================================
+
+
+export const localizacao: Localizacao[] = [
+  { id_localizacao: 1, nome_cidade: "São Paulo", uf: "SP" },
+  { id_localizacao: 2, nome_cidade: "Rio de Janeiro", uf: "RJ" },
+  { id_localizacao: 3, nome_cidade: "Belo Horizonte", uf: "MG" },
+  { id_localizacao: 4, nome_cidade: "Salvador", uf: "BA" },
+  { id_localizacao: 5, nome_cidade: "Fortaleza", uf: "CE" },
+  { id_localizacao: 6, nome_cidade: "Manaus", uf: "AM" },
+]
 
 export const escolas: Escola[] = [
   {
@@ -145,53 +160,192 @@ export const professores: Professor[] = [
   },
 ]
 
+export const fornecedores: Fornecedor[] = [
+  {
+    id_fornecedor: 1,
+    nome: "Papelaria ABC",
+    cnpj: "12.345.678/0001-90",
+    telefone: "(11) 1234-5678",
+    email: "contato@papelariaabc.com.br",
+    website: "www.papelariaabc.com.br",
+    id_localizacao: 1,
+  }, 
+  {
+    id_fornecedor: 2,
+    nome: "Limpeza XYZ",
+    cnpj: "98.765.432/0001-00",
+    telefone: "(11) 8765-4321",
+    email: "contato@limpezaxyz.com.br",
+    website: "www.limpezaxyz.com.br",
+    id_localizacao: 1,
+  },
+  {
+    id_fornecedor: 3,
+    nome: "Informática Tech",
+    cnpj: "11.222.333/0001-44",
+    telefone: "(11) 1122-3344",
+    email: "contato@informaticatech.com.br",
+    website: "www.informaticatech.com.br",
+    id_localizacao: 2,
+  }
+]
+
 export const itensConsumo: ItemConsumo[] = [
   {
-    id_item: 1,
+    id_item_consumo: 1,
     nome: "Papel A4",
     descricao: "Resma de papel A4 500 folhas",
-    unidade_medida: "resma",
-    quantidade_minima: 10,
-    id_categoria: 1,
+    quantidade: 45,
+    id_escola: 1,
+    id_fornecedor: 1,
     criado_em: "2024-01-15T00:00:00",
   },
   {
-    id_item: 2,
+    id_item_consumo: 2,
     nome: "Lápis Preto",
     descricao: "Lápis preto nº 2",
-    unidade_medida: "unidade",
-    quantidade_minima: 50,
-    id_categoria: 1,
+    quantidade: 120,
+    id_escola: 2,
+    id_fornecedor: 1,
     criado_em: "2024-01-15T00:00:00",
   },
   {
-    id_item: 3,
+    id_item_consumo: 3,
     nome: "Álcool 70%",
     descricao: "Álcool 70% 1 litro",
-    unidade_medida: "litro",
-    quantidade_minima: 20,
-    id_categoria: 2,
+    quantidade: 35,
+    id_escola: 3,
+    id_fornecedor: 2,
     criado_em: "2024-01-15T00:00:00",
   },
   {
-    id_item: 4,
+    id_item_consumo: 4,
     nome: "Toner HP 85A",
     descricao: "Toner para impressora HP",
-    unidade_medida: "unidade",
-    quantidade_minima: 5,
-    id_categoria: 3,
+    quantidade: 7,
+    id_escola: 1,
+    id_fornecedor: 3,
     criado_em: "2024-01-15T00:00:00",
   },
   {
-    id_item: 5,
+    id_item_consumo: 5,
     nome: "Caderno 10 Matérias",
     descricao: "Caderno universitário 10 matérias",
-    unidade_medida: "unidade",
-    quantidade_minima: 30,
-    id_categoria: 1,
+    quantidade: 60,
+    id_escola: 2,
+    id_fornecedor: 1,
     criado_em: "2024-01-15T00:00:00",
   },
 ]
+
+export const itensCapital: ItemCapital[] = [
+  {
+    id_item_capital: 1,
+    numero_patrimonio: "PAT-001234",
+    nome: "Computador Desktop Dell",
+    descricao: "Computador para sala de informática",
+    id_escola: 1,
+    id_fornecedor: 1,
+  },
+  {
+    id_item_capital: 2,
+    numero_patrimonio: "PAT-001235",
+    nome: "Projetor Epson",
+    descricao: "Projetor para sala de aula",
+    id_escola: 2,
+    id_fornecedor: 2,
+  },
+  {
+    id_item_capital: 3,
+    numero_patrimonio: "PAT-001236",
+    nome: "Impressora HP LaserJet",
+    descricao: "Impressora para secretaria",
+    id_escola: 3,
+    id_fornecedor: 3,
+  },
+  {
+    id_item_capital: 4,
+    numero_patrimonio: "PAT-001237",
+    nome: "Mesa de Professor",
+    descricao: "Mesa de madeira para sala de aula",
+    id_escola: 1,
+    id_fornecedor: 1,
+  },
+  {
+    id_item_capital: 5,
+    numero_patrimonio: "PAT-001238",
+    nome: "Ar Condicionado Split",
+    descricao: "Ar condicionado para sala de professores",
+    id_escola: 2,
+    id_fornecedor: 2,
+  },
+]
+
+export const compras: Compra[] = [
+  {
+    id_compra: 1,
+    quantidade: 20,
+    data_compra: "2024-05-28",
+    valor_unitario: 12.5,
+    marca: "Papelaria Central",
+    nota_fiscal: "NF-2024-001",
+    id_escola: 1,
+    id_fornecedor: 1,
+    id_item_consumo: 1,
+    id_item_capital: null,
+  },
+  {
+    id_compra: 2,
+    quantidade: 10,
+    data_compra: "2024-05-25",
+    valor_unitario: 28.0,
+    marca: "Limpeza Total",
+    nota_fiscal: "NF-2024-002",
+    id_escola: 2,
+    id_fornecedor: 2,
+    id_item_consumo: 3,
+    id_item_capital: null,
+  },
+  {
+    id_compra: 3,
+    quantidade: 2,
+    data_compra: "2024-05-20",
+    valor_unitario: 1500.0,
+    marca: "InfoTech Equipamentos",
+    nota_fiscal: "NF-2024-003",
+    id_escola: 3,
+    id_fornecedor: 3,
+    id_item_consumo: null,
+    id_item_capital: 2,
+  },
+  {
+    id_compra: 4,
+    quantidade: 5,
+    data_compra: "2024-05-18",
+    valor_unitario: 450.0,
+    marca: "Móveis Escolares Ltda",
+    nota_fiscal: "NF-2024-004",
+    id_escola: 1,
+    id_fornecedor: 1,
+    id_item_consumo: null,
+    id_item_capital: 4,
+  },
+  {
+    id_compra: 5,
+    quantidade: 30,
+    data_compra: "2024-05-15",
+    valor_unitario: 5.2,
+    marca: "Papelaria Central",
+    nota_fiscal: "NF-2024-005",
+    id_escola: 2,
+    id_fornecedor: 1,
+    id_item_consumo: 2,
+    id_item_capital: null,
+  },
+]
+
+
+
 
 export const ultimasMovimentacoes: MovimentacaoEstoque[] = [
   {
@@ -199,7 +353,7 @@ export const ultimasMovimentacoes: MovimentacaoEstoque[] = [
     tipo: "saida",
     quantidade: 20,
     observacao: null,
-    id_item: 1,
+    id_item_consumo: 1,
     id_escola: 1,
     id_usuario: 2,
     criado_em: "2024-05-30T10:45:00",
@@ -212,7 +366,7 @@ export const ultimasMovimentacoes: MovimentacaoEstoque[] = [
     tipo: "entrada",
     quantidade: 50,
     observacao: null,
-    id_item: 2,
+    id_item_consumo: 2,
     id_escola: 2,
     id_usuario: 3,
     criado_em: "2024-05-30T09:30:00",
@@ -225,7 +379,7 @@ export const ultimasMovimentacoes: MovimentacaoEstoque[] = [
     tipo: "saida",
     quantidade: 5,
     observacao: null,
-    id_item: 3,
+    id_item_consumo: 3,
     id_escola: 3,
     id_usuario: 3,
     criado_em: "2024-05-29T16:20:00",
@@ -238,7 +392,7 @@ export const ultimasMovimentacoes: MovimentacaoEstoque[] = [
     tipo: "entrada",
     quantidade: 2,
     observacao: null,
-    id_item: 4,
+    id_item_consumo: 4,
     id_escola: 1,
     id_usuario: 2,
     criado_em: "2024-05-29T14:10:00",
@@ -251,7 +405,7 @@ export const ultimasMovimentacoes: MovimentacaoEstoque[] = [
     tipo: "saida",
     quantidade: 15,
     observacao: null,
-    id_item: 5,
+    id_item_consumo: 5,
     id_escola: 2,
     id_usuario: 2,
     criado_em: "2024-05-29T11:05:00",

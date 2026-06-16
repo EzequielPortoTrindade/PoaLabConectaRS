@@ -1,4 +1,4 @@
-import { Escola, EscolaCreate, EscolaRepository } from "../interfaces/school.interface.js";
+import { Escola, EscolaCreate, EscolaRepository } from "../../../shared/school.interface.js";
 
 class EscolaUseCase {
     // 1. Recebemos o repositório pelo construtor (Injeção de Dependência)

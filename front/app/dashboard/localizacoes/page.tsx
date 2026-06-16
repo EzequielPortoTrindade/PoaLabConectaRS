@@ -47,12 +47,12 @@ import {
 } from "@/components/ui/select"
 
 const localizacoes = [
-  { id: 1, nome: "Almoxarifado Central", tipo: "Almoxarifado", escola: "Monte Azul", capacidade: 500, itens: 342, status: "Ativo" },
-  { id: 2, nome: "Sala de Materiais", tipo: "Sala", escola: "São João", capacidade: 200, itens: 156, status: "Ativo" },
-  { id: 3, nome: "Depósito de Limpeza", tipo: "Depósito", escola: "Dom Pedro", capacidade: 100, itens: 78, status: "Ativo" },
-  { id: 4, nome: "Laboratório de Informática", tipo: "Laboratório", escola: "Monte Azul", capacidade: 50, itens: 45, status: "Ativo" },
-  { id: 5, nome: "Biblioteca", tipo: "Biblioteca", escola: "São João", capacidade: 1000, itens: 856, status: "Ativo" },
-  { id: 6, nome: "Sala dos Professores", tipo: "Sala", escola: "Dom Pedro", capacidade: 30, itens: 25, status: "Inativo" },
+  { id: 1, nome_cidade: "São Paulo", uf: "SP" },
+  { id: 2, nome_cidade: "Rio de Janeiro", uf: "RJ" },
+  { id: 3, nome_cidade: "Belo Horizonte", uf: "MG" },
+  { id: 4, nome_cidade: "Salvador", uf: "BA" },
+  { id: 5, nome_cidade: "Fortaleza", uf: "CE" },
+  { id: 6, nome_cidade: "Manaus", uf: "AM" },
 ]
 
 export default function LocalizacoesPage() {
@@ -60,8 +60,8 @@ export default function LocalizacoesPage() {
 
   const filteredLocalizacoes = localizacoes.filter(
     (loc) =>
-      loc.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      loc.escola.toLowerCase().includes(searchTerm.toLowerCase())
+      loc.nome_cidade.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      loc.uf.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
   return (
@@ -72,7 +72,7 @@ export default function LocalizacoesPage() {
             Localizações
           </h1>
           <p className="text-muted-foreground">
-            Gerencie os locais de armazenamento do estoque
+           Adicione uma nova cidade ao sistema.
           </p>
         </div>
         <Dialog>
@@ -86,45 +86,50 @@ export default function LocalizacoesPage() {
             <DialogHeader>
               <DialogTitle>Nova Localização</DialogTitle>
               <DialogDescription>
-                Adicione um novo local de armazenamento ao sistema.
+                Adicione um nova localização ao sistema.
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="grid gap-2">
-                <Label htmlFor="nome">Nome</Label>
-                <Input id="nome" placeholder="Nome da localização" />
+                <Label htmlFor="nome">Nome da Cidade</Label>
+                <Input id="nome" placeholder="digite o nome da cidade" />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="tipo">Tipo</Label>
+                <Label htmlFor="uf">UF</Label>
                 <Select>
                   <SelectTrigger>
-                    <SelectValue placeholder="Selecione o tipo" />
+                    <SelectValue placeholder="Selecione a UF" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="almoxarifado">Almoxarifado</SelectItem>
-                    <SelectItem value="sala">Sala</SelectItem>
-                    <SelectItem value="deposito">Depósito</SelectItem>
-                    <SelectItem value="laboratorio">Laboratório</SelectItem>
-                    <SelectItem value="biblioteca">Biblioteca</SelectItem>
+                    <SelectItem value="RO">RO</SelectItem>
+                    <SelectItem value="AC">AC</SelectItem>
+                    <SelectItem value="AM">AM</SelectItem>
+                    <SelectItem value="RR">RR</SelectItem>
+                    <SelectItem value="PA">PA</SelectItem>
+                    <SelectItem value="AP">AP</SelectItem>
+                    <SelectItem value="TO">TO</SelectItem>
+                    <SelectItem value="MA">MA</SelectItem>
+                    <SelectItem value="PI">PI</SelectItem>
+                    <SelectItem value="CE">CE</SelectItem>
+                    <SelectItem value="RN">RN</SelectItem>
+                    <SelectItem value="PB">PB</SelectItem>
+                    <SelectItem value="PE">PE</SelectItem>
+                    <SelectItem value="AL">AL</SelectItem>
+                    <SelectItem value="SE">SE</SelectItem>
+                    <SelectItem value="BA">BA</SelectItem>
+                    <SelectItem value="MG">MG</SelectItem>
+                    <SelectItem value="ES">ES</SelectItem>
+                    <SelectItem value="RJ">RJ</SelectItem>
+                    <SelectItem value="SP">SP</SelectItem>
+                    <SelectItem value="PR">PR</SelectItem>
+                    <SelectItem value="SC">SC</SelectItem>
+                    <SelectItem value="RS">RS</SelectItem>
+                    <SelectItem value="MS">MS</SelectItem>
+                    <SelectItem value="MT">MT</SelectItem>
+                    <SelectItem value="GO">GO</SelectItem>
+                    <SelectItem value="DF">DF</SelectItem>
                   </SelectContent>
                 </Select>
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="escola">Escola</Label>
-                <Select>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione a escola" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="monte-azul">Monte Azul</SelectItem>
-                    <SelectItem value="sao-joao">São João</SelectItem>
-                    <SelectItem value="dom-pedro">Dom Pedro</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="capacidade">Capacidade</Label>
-                <Input id="capacidade" type="number" placeholder="Capacidade máxima" />
               </div>
             </div>
             <DialogFooter>
@@ -144,45 +149,6 @@ export default function LocalizacoesPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{localizacoes.length}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Locais Ativos
-            </CardTitle>
-            <Building2 className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {localizacoes.filter((l) => l.status === "Ativo").length}
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Capacidade Total
-            </CardTitle>
-            <MapPin className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {localizacoes.reduce((acc, l) => acc + l.capacidade, 0).toLocaleString("pt-BR")}
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Itens Armazenados
-            </CardTitle>
-            <MapPin className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {localizacoes.reduce((acc, l) => acc + l.itens, 0).toLocaleString("pt-BR")}
-            </div>
           </CardContent>
         </Card>
       </div>
@@ -206,30 +172,16 @@ export default function LocalizacoesPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Nome</TableHead>
-                <TableHead>Tipo</TableHead>
-                <TableHead>Escola</TableHead>
-                <TableHead className="text-right">Capacidade</TableHead>
-                <TableHead className="text-right">Itens</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead>Nome da Cidade</TableHead>
+                <TableHead>UF</TableHead>
                 <TableHead className="w-[50px]"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredLocalizacoes.map((loc) => (
                 <TableRow key={loc.id}>
-                  <TableCell className="font-medium">{loc.nome}</TableCell>
-                  <TableCell>{loc.tipo}</TableCell>
-                  <TableCell>{loc.escola}</TableCell>
-                  <TableCell className="text-right">{loc.capacidade}</TableCell>
-                  <TableCell className="text-right">{loc.itens}</TableCell>
-                  <TableCell>
-                    <Badge
-                      variant={loc.status === "Ativo" ? "default" : "secondary"}
-                    >
-                      {loc.status}
-                    </Badge>
-                  </TableCell>
+                  <TableCell className="font-medium">{loc.nome_cidade}</TableCell>
+                  <TableCell>{loc.uf}</TableCell>
                   <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>

@@ -1,5 +1,5 @@
 import { prisma } from "../db/prisma-client.js";
-import { Item_Consumo, ItemConsumoCreate, ItemConsumoRepository } from "../interfaces/consumo.interface.js";
+import { Item_Consumo, ItemConsumoCreate, ItemConsumoRepository } from "../../../shared/consumo.interface.js";
 
 class ItemConsumoRepoPrisma implements ItemConsumoRepository{
     async create(data: ItemConsumoCreate): Promise<Item_Consumo> {

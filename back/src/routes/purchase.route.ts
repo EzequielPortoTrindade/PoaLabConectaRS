@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify";
 import { CompraUseCase } from "../usecases/purchase.usecase.js"; 
-import { CompraCreate } from "../interfaces/purchase.interface.js";
+import { CompraCreate } from "../../../shared/purchase.interface.js";
 import { CompraRepoPrisma } from "../repositories/purchase.repository.js"; 
 
 export async function compraRoutes(fastify: FastifyInstance) {

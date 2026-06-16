@@ -41,18 +41,19 @@ export interface Escola {
   rua: string | null
   numero: number | null
   bairro: string | null
-  id_localizacao: number | null
+  id_localizacao: number 
   localizacao?: Localizacao
 }
 
 export interface Fornecedor {
   id_fornecedor: number
   nome: string
-  cnpj: string | null
+  cnpj: string 
   telefone: string | null
-  email: string | null
-  endereco: string | null
-  criado_em: string
+  email: string 
+  website: string | null
+  id_localizacao: number
+  localizacao?: Localizacao
 }
 
 export interface Categoria {
@@ -62,34 +63,32 @@ export interface Categoria {
 }
 
 export interface ItemConsumo {
-  id_item: number
+  id_item_consumo: number
   nome: string
   descricao: string | null
-  unidade_medida: string
-  quantidade_minima: number
-  id_categoria: number
+  quantidade: number
+  id_escola: number
+  id_fornecedor: number
   criado_em: string
-  categoria?: Categoria
+  escola?: Escola
+  fornecedor?: Fornecedor
 }
 
 export interface ItemCapital {
-  id_item: number
+  id_item_capital: number
   nome: string
+  numero_patrimonio: string | null
   descricao: string | null
-  codigo_patrimonio: string | null
-  valor_aquisicao: number | null
-  data_aquisicao: string | null
-  id_categoria: number
-  id_fornecedor: number | null
-  criado_em: string
-  categoria?: Categoria
+  id_escola: number
+  id_fornecedor: number
+  escola?: Escola
   fornecedor?: Fornecedor
 }
 
 export interface EstoqueEscola {
   id_estoque: number
   quantidade: number
-  id_item: number
+  id_item_consumo: number
   id_escola: number
   atualizado_em: string
   item?: ItemConsumo
@@ -101,7 +100,7 @@ export interface MovimentacaoEstoque {
   tipo: TipoMovimentacao
   quantidade: number
   observacao: string | null
-  id_item: number
+  id_item_consumo: number
   id_escola: number
   id_usuario: number
   criado_em: string
@@ -112,25 +111,21 @@ export interface MovimentacaoEstoque {
 
 export interface Compra {
   id_compra: number
-  numero_nota: string | null
+  nota_fiscal: string 
   data_compra: string
-  valor_total: number
-  id_fornecedor: number
-  id_usuario: number
-  criado_em: string
-  fornecedor?: Fornecedor
-  usuario?: Usuario
-  itens?: ItemCompra[]
-}
-
-export interface ItemCompra {
-  id_item_compra: number
   quantidade: number
   valor_unitario: number
-  id_compra: number
-  id_item: number
-  item?: ItemConsumo
+  marca: string | null
+  id_item_consumo: number | null
+  id_item_capital: number | null
+  id_escola: number
+  id_fornecedor: number
+  fornecedor?: Fornecedor
+  escola?: Escola
+  ItemCapital?: ItemCapital
+  ItemConsumo?: ItemConsumo
 }
+
 
 // ==========================================
 // TIPOS DE RESPOSTA DA API

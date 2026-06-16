@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify";
 import { LocalUseCase } from "../usecases/local.usecase.js";
-import { LocalCreate } from "../interfaces/local.interface.js";
+import { LocalCreate } from "../../../shared/local.interface.js";
 import { LocalRepoPrisma } from "../repositories/local.repository.js"; 
 
 export async function localRoutes(fastify: FastifyInstance) {

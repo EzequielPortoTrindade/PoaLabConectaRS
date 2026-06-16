@@ -1,4 +1,4 @@
-import { Item_Consumo, ItemConsumoCreate, ItemConsumoRepository } from "../interfaces/consumo.interface.js";
+import { Item_Consumo, ItemConsumoCreate, ItemConsumoRepository } from "../../../shared/consumo.interface.js";
 
 class ItemConsumoUseCase {
 

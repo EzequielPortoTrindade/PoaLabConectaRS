@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify";
 import { EscolaUseCase } from "../usecases/school.usecase.js";
-import { EscolaCreate } from "../interfaces/school.interface.js";
+import { EscolaCreate } from "../../../shared/school.interface.js";
 import { EscolaRepoPrisma } from "../repositories/school.repository.js"; // Importa o repositório
 
 export async function escolaRoutes(fastify: FastifyInstance) {

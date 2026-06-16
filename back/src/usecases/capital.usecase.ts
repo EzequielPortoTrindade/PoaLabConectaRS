@@ -1,4 +1,4 @@
-import { Item_Capital, ItemCapitalCreate, ItemCapitalRepository } from "../interfaces/capital.interface.js";
+import { Item_Capital, ItemCapitalCreate, ItemCapitalRepository } from "../../../shared/capital.interface.js";
 
 class ItemCapitalUseCase {
 

@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify";
 import { ItemConsumoUseCase } from "../usecases/consumo.usecase.js"; 
-import { ItemConsumoCreate } from "../interfaces/consumo.interface.js";
+import { ItemConsumoCreate } from "../../../shared/consumo.interface.js";
 import { ItemConsumoRepoPrisma } from "../repositories/consumo.repository.js"; 
 
 export async function itemConsumoRoutes(fastify: FastifyInstance) {

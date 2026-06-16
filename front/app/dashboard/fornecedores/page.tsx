@@ -40,14 +40,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
+import {fornecedores } from "@/lib/mock-data"
 
-const fornecedores = [
-  { id: 1, nome: "Papelaria Central", cnpj: "12.345.678/0001-90", contato: "João Silva", telefone: "(11) 99999-1234", email: "contato@papelariacentral.com.br", categoria: "Papelaria", status: "Ativo" },
-  { id: 2, nome: "Limpeza Total", cnpj: "23.456.789/0001-01", contato: "Maria Santos", telefone: "(11) 98888-5678", email: "vendas@limpezatotal.com.br", categoria: "Limpeza", status: "Ativo" },
-  { id: 3, nome: "InfoTech Equipamentos", cnpj: "34.567.890/0001-12", contato: "Carlos Oliveira", telefone: "(11) 97777-9012", email: "comercial@infotech.com.br", categoria: "Informática", status: "Ativo" },
-  { id: 4, nome: "Móveis Escolares Ltda", cnpj: "45.678.901/0001-23", contato: "Ana Costa", telefone: "(11) 96666-3456", email: "vendas@moveisescolares.com.br", categoria: "Mobiliário", status: "Inativo" },
-  { id: 5, nome: "Distribuidora Escolar", cnpj: "56.789.012/0001-34", contato: "Pedro Lima", telefone: "(11) 95555-7890", email: "pedidos@distescolar.com.br", categoria: "Diversos", status: "Ativo" },
-]
 
 export default function FornecedoresPage() {
   const [searchTerm, setSearchTerm] = React.useState("")
@@ -55,8 +49,7 @@ export default function FornecedoresPage() {
   const filteredFornecedores = fornecedores.filter(
     (forn) =>
       forn.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      forn.cnpj.includes(searchTerm) ||
-      forn.categoria.toLowerCase().includes(searchTerm.toLowerCase())
+      forn.cnpj.includes(searchTerm) 
   )
 
   return (
@@ -86,7 +79,7 @@ export default function FornecedoresPage() {
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="grid gap-2">
-                <Label htmlFor="nome">Nome/Razão Social</Label>
+                <Label htmlFor="nome">Nome Completo</Label>
                 <Input id="nome" placeholder="Nome do fornecedor" />
               </div>
               <div className="grid gap-2">
@@ -94,10 +87,6 @@ export default function FornecedoresPage() {
                 <Input id="cnpj" placeholder="00.000.000/0001-00" />
               </div>
               <div className="grid grid-cols-2 gap-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="contato">Pessoa de Contato</Label>
-                  <Input id="contato" placeholder="Nome do contato" />
-                </div>
                 <div className="grid gap-2">
                   <Label htmlFor="telefone">Telefone</Label>
                   <Input id="telefone" placeholder="(00) 00000-0000" />
@@ -108,8 +97,8 @@ export default function FornecedoresPage() {
                 <Input id="email" type="email" placeholder="email@exemplo.com" />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="categoria">Categoria</Label>
-                <Input id="categoria" placeholder="Ex: Papelaria, Limpeza..." />
+                <Label htmlFor="website">Website</Label>
+                <Input id="website" placeholder="https://www.exemplo.com" />
               </div>
             </div>
             <DialogFooter>
@@ -127,9 +116,6 @@ export default function FornecedoresPage() {
             </CardTitle>
             <Truck className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{fornecedores.length}</div>
-          </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -138,37 +124,6 @@ export default function FornecedoresPage() {
             </CardTitle>
             <Building className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {fornecedores.filter((f) => f.status === "Ativo").length}
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Categorias
-            </CardTitle>
-            <Truck className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {new Set(fornecedores.map((f) => f.categoria)).size}
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Inativos
-            </CardTitle>
-            <Truck className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {fornecedores.filter((f) => f.status === "Inativo").length}
-            </div>
-          </CardContent>
         </Card>
       </div>
 
@@ -191,17 +146,17 @@ export default function FornecedoresPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Nome</TableHead>
+                <TableHead>Nome Completo</TableHead>
                 <TableHead>CNPJ</TableHead>
-                <TableHead>Contato</TableHead>
-                <TableHead>Categoria</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead>Telefone</TableHead>
+                <TableHead>Email</TableHead>
+                <TableHead>Website</TableHead>
                 <TableHead className="w-[50px]"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredFornecedores.map((forn) => (
-                <TableRow key={forn.id}>
+                <TableRow key={forn.id_fornecedor}>
                   <TableCell>
                     <div>
                       <p className="font-medium">{forn.nome}</p>
@@ -211,46 +166,34 @@ export default function FornecedoresPage() {
                   <TableCell className="font-mono text-sm">{forn.cnpj}</TableCell>
                   <TableCell>
                     <div>
-                      <p className="text-sm">{forn.contato}</p>
-                      <p className="text-xs text-muted-foreground">{forn.telefone}</p>
+                      <p className="text-sm">{forn.telefone}</p>
                     </div>
                   </TableCell>
-                  <TableCell>{forn.categoria}</TableCell>
                   <TableCell>
-                    <Badge
-                      variant={forn.status === "Ativo" ? "default" : "secondary"}
-                    >
-                      {forn.status}
-                    </Badge>
+                    <p className="text-sm">{forn.website}</p>
                   </TableCell>
-                  <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem>
-                          <Phone className="mr-2 h-4 w-4" />
-                          Ligar
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                          <Mail className="mr-2 h-4 w-4" />
-                          Enviar E-mail
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                          <Pencil className="mr-2 h-4 w-4" />
-                          Editar
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="text-destructive">
-                          <Trash2 className="mr-2 h-4 w-4" />
-                          Excluir
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
+                 <TableCell>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon">
+                      <MoreHorizontal className="h-4 w-4" />
+                    </Button>
+                </DropdownMenuTrigger>
+
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem>
+                    <Mail className="mr-2 h-4 w-4" />
+                      Enviar E-mail
+                  </DropdownMenuItem>
+
+                <DropdownMenuItem className="text-destructive">
+                  <Trash2 className="mr-2 h-4 w-4" />
+                    Excluir
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </TableCell>
+        </TableRow>
               ))}
             </TableBody>
           </Table>

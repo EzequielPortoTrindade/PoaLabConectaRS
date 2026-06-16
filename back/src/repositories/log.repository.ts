@@ -1,5 +1,5 @@
 import { prisma } from "../db/prisma-client.js";
-import { Saida, SaidaCreate, SaidaRepository } from "../interfaces/log.interface.js";
+import { Saida, SaidaCreate, SaidaRepository } from "../../../shared/log.interface.js";
 
 class SaidaRepoPrisma implements SaidaRepository {
 

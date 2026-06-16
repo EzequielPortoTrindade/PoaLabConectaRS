@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify";
 import { SaidaUseCase } from "../usecases/log.usecase.js";
-import { SaidaCreate } from "../interfaces/log.interface.js";
+import { SaidaCreate } from "../../../shared/log.interface.js";
 import { SaidaRepoPrisma } from "../repositories/log.repository.js"; 
 
 export async function saidaRoutes(fastify: FastifyInstance) {

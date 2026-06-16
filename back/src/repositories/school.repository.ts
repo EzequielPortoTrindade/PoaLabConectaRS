@@ -1,5 +1,5 @@
 import { prisma } from "../db/prisma-client.js";
-import { Escola, EscolaCreate, EscolaRepository } from "../interfaces/school.interface.js";
+import { Escola, EscolaCreate, EscolaRepository } from "../../../shared/school.interface.js";
 
 class EscolaRepoPrisma implements EscolaRepository {
     

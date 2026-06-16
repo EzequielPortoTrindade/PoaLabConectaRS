@@ -1,12 +1,13 @@
-import { tipo_usuario } from "@prisma/client";
 import { Escola } from "./school.interface.js";
+
+export type TipoUsuario = "ADMIN" | "PROFESSOR";
 
 export interface Usuario {
     id_usuario: number;
     nome: string;
     email: string;
     senha: string;
-    tipo: tipo_usuario;
+    tipo: TipoUsuario;
     id_escola: number | null;
     escola?: Escola;
 }
@@ -15,7 +16,7 @@ export interface UserCreate {
     nome: string;
     email: string;
     senha: string;
-    tipo: tipo_usuario;
+    tipo: TipoUsuario;
     id_escola: number;
 }
 

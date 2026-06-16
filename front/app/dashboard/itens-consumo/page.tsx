@@ -8,9 +8,6 @@ import {
   Pencil,
   Trash2,
   Eye,
-  Package,
-  AlertTriangle,
-  ArrowUpDown,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -39,37 +36,40 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { PageHeader, StatusBadge } from "@/components/shared"
-import { itensConsumo } from "@/lib/mock-data"
-import { cn } from "@/lib/utils"
+import { PageHeader } from "@/components/shared"
+import { escolas, fornecedores, itensConsumo } from "@/lib/mock-data"
 
-const categorias = [
-  { id_categoria: 1, nome: "Papelaria" },
-  { id_categoria: 2, nome: "Limpeza" },
-  { id_categoria: 3, nome: "Informática" },
-  { id_categoria: 4, nome: "Mobiliário" },
-]
-
-// Mock estoque data
-const estoqueData = itensConsumo.map((item, index) => ({
+const consumoData = itensConsumo.map((item) => ({
   ...item,
-  quantidade_atual: [5, 8, 3, 2, 15][index],
-  categoria: categorias.find((c) => c.id_categoria === item.id_categoria),
+  escola: escolas.find((escola) => escola.id_escola === item.id_escola) ?? null,
+  fornecedor:
+    fornecedores.find((forn) => forn.id_fornecedor === item.id_fornecedor) ?? null,
 }))
 
 export default function ItensConsumoPage() {
   const [searchTerm, setSearchTerm] = React.useState("")
   const [isCreateDialogOpen, setIsCreateDialogOpen] = React.useState(false)
+  const [nome, setNome] = React.useState("")
+  const [descricao, setDescricao] = React.useState("")
+  const [quantidade, setQuantidade] = React.useState("")
+  const [escolaSelecionada, setEscolaSelecionada] = React.useState<string>("")
+  const [fornecedorSelecionado, setFornecedorSelecionado] = React.useState<string>("")
 
-  const filteredItens = estoqueData.filter((item) =>
-    item.nome.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  const filteredItens = consumoData.filter((item) => {
+    const search = searchTerm.toLowerCase()
+    return (
+      item.nome.toLowerCase().includes(search) ||
+      item.descricao?.toLowerCase().includes(search) ||
+      item.escola?.nome.toLowerCase().includes(search) ||
+      item.fornecedor?.nome.toLowerCase().includes(search)
+    )
+  })
 
   return (
     <div className="space-y-6">
       <PageHeader
         title="Itens de Consumo"
-        description="Gerencie os itens de consumo do estoque"
+        description="Gerencie os itens de consumo e seus relacionamentos com escola e fornecedor"
       >
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger asChild>
@@ -87,47 +87,70 @@ export default function ItensConsumoPage() {
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="grid gap-2">
-                <Label htmlFor="nome">Nome do Item</Label>
-                <Input id="nome" placeholder="Ex: Papel A4, Lápis..." />
+                <Label htmlFor="nome">Nome</Label>
+                <Input
+                  id="nome"
+                  value={nome}
+                  onChange={(e) => setNome(e.target.value)}
+                  placeholder="Ex: Papel A4, Lápis..."
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="quantidade">Quantidade</Label>
+                <Input
+                  id="quantidade"
+                  type="number"
+                  value={quantidade}
+                  onChange={(e) => setQuantidade(e.target.value)}
+                  placeholder="0"
+                />
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="descricao">Descrição</Label>
-                <Input id="descricao" placeholder="Descrição do item" />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="unidade">Unidade de Medida</Label>
-                  <Select>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="unidade">Unidade</SelectItem>
-                      <SelectItem value="resma">Resma</SelectItem>
-                      <SelectItem value="caixa">Caixa</SelectItem>
-                      <SelectItem value="litro">Litro</SelectItem>
-                      <SelectItem value="kg">Quilograma</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="minimo">Quantidade Mínima</Label>
-                  <Input id="minimo" type="number" placeholder="0" />
-                </div>
+                <Input
+                  id="descricao"
+                  value={descricao}
+                  onChange={(e) => setDescricao(e.target.value)}
+                  placeholder="Descrição do item"
+                />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="categoria">Categoria</Label>
-                <Select>
+                <Label htmlFor="escola">Escola</Label>
+                <Select
+                  value={escolaSelecionada}
+                  onValueChange={(value) => setEscolaSelecionada(value)}
+                >
                   <SelectTrigger>
-                    <SelectValue placeholder="Selecione a categoria" />
+                    <SelectValue placeholder="Selecione a escola" />
                   </SelectTrigger>
                   <SelectContent>
-                    {categorias.map((cat) => (
+                    {escolas.map((escola) => (
                       <SelectItem
-                        key={cat.id_categoria}
-                        value={cat.id_categoria.toString()}
+                        key={escola.id_escola}
+                        value={escola.id_escola.toString()}
                       >
-                        {cat.nome}
+                        {escola.nome}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="fornecedor">Fornecedor</Label>
+                <Select
+                  value={fornecedorSelecionado}
+                  onValueChange={(value) => setFornecedorSelecionado(value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione o fornecedor" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {fornecedores.map((forn) => (
+                      <SelectItem
+                        key={forn.id_fornecedor}
+                        value={forn.id_fornecedor.toString()}
+                      >
+                        {forn.nome}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -149,7 +172,6 @@ export default function ItensConsumoPage() {
         </Dialog>
       </PageHeader>
 
-      {/* Filters */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="relative w-full sm:max-w-xs">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -160,52 +182,27 @@ export default function ItensConsumoPage() {
             className="pl-9"
           />
         </div>
-        <div className="flex items-center gap-2">
-          <Select>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Filtrar por categoria" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todas as categorias</SelectItem>
-              {categorias.map((cat) => (
-                <SelectItem
-                  key={cat.id_categoria}
-                  value={cat.id_categoria.toString()}
-                >
-                  {cat.nome}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
       </div>
 
-      {/* Table */}
       <div className="rounded-xl border border-border bg-card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="border-b border-border bg-muted/50">
                 <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                  <button className="flex items-center gap-1 hover:text-foreground">
-                    Item
-                    <ArrowUpDown className="h-3 w-3" />
-                  </button>
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                  Categoria
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                  Unidade
+                  Nome
                 </th>
                 <th className="px-6 py-3 text-center text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                  Qtd. Atual
+                  Quantidade
                 </th>
                 <th className="px-6 py-3 text-center text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                  Qtd. Mínima
+                  Escola
+                </th>
+                <th className="px-6 py-3 text-center text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                  Fornecedor
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                  Status
+                  Descrição
                 </th>
                 <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-muted-foreground">
                   Ações
@@ -213,99 +210,59 @@ export default function ItensConsumoPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {filteredItens.map((item) => {
-                const isBaixo = item.quantidade_atual < item.quantidade_minima
-                return (
-                  <tr key={item.id_item} className="hover:bg-muted/30">
-                    <td className="whitespace-nowrap px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <div
-                          className={cn(
-                            "flex h-10 w-10 items-center justify-center rounded-lg",
-                            isBaixo
-                              ? "bg-destructive/10"
-                              : "bg-primary/10"
-                          )}
-                        >
-                          {isBaixo ? (
-                            <AlertTriangle className="h-5 w-5 text-destructive" />
-                          ) : (
-                            <Package className="h-5 w-5 text-primary" />
-                          )}
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium text-foreground">
-                            {item.nome}
-                          </p>
-                          <p className="text-xs text-muted-foreground line-clamp-1">
-                            {item.descricao}
-                          </p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="whitespace-nowrap px-6 py-4">
-                      <span className="rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground">
-                        {item.categoria?.nome}
-                      </span>
-                    </td>
-                    <td className="whitespace-nowrap px-6 py-4 text-sm text-muted-foreground capitalize">
-                      {item.unidade_medida}
-                    </td>
-                    <td
-                      className={cn(
-                        "whitespace-nowrap px-6 py-4 text-center text-sm font-semibold",
-                        isBaixo ? "text-destructive" : "text-foreground"
-                      )}
-                    >
-                      {item.quantidade_atual}
-                    </td>
-                    <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-muted-foreground">
-                      {item.quantidade_minima}
-                    </td>
-                    <td className="whitespace-nowrap px-6 py-4">
-                      <StatusBadge status={isBaixo ? "baixo" : "normal"}>
-                        {isBaixo ? "Estoque Baixo" : "Normal"}
-                      </StatusBadge>
-                    </td>
-                    <td className="whitespace-nowrap px-6 py-4 text-right">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-8 w-8">
-                            <MoreHorizontal className="h-4 w-4" />
-                            <span className="sr-only">Abrir menu</span>
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Ações</DropdownMenuLabel>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem>
-                            <Eye className="mr-2 h-4 w-4" />
-                            Visualizar
-                          </DropdownMenuItem>
-                          <DropdownMenuItem>
-                            <Pencil className="mr-2 h-4 w-4" />
-                            Editar
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem className="text-destructive">
-                            <Trash2 className="mr-2 h-4 w-4" />
-                            Excluir
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </td>
-                  </tr>
-                )
-              })}
+              {filteredItens.map((item) => (
+                <tr key={item.id_item} className="hover:bg-muted/30">
+                  <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-foreground">
+                    {item.nome}
+                  </td>
+                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-muted-foreground">
+                    {item.quantidade}
+                  </td>
+                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-muted-foreground">
+                    {item.escola?.nome ?? "-"}
+                  </td>
+                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-muted-foreground">
+                    {item.fornecedor?.nome ?? "-"}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-muted-foreground">
+                    {item.descricao ?? "-"}
+                  </td>
+                  <td className="whitespace-nowrap px-6 py-4 text-right">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                          <MoreHorizontal className="h-4 w-4" />
+                          <span className="sr-only">Abrir menu</span>
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>Ações</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem>
+                          <Eye className="mr-2 h-4 w-4" />
+                          Visualizar
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>
+                          <Pencil className="mr-2 h-4 w-4" />
+                          Editar
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem className="text-destructive">
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          Excluir
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
 
-        {/* Pagination */}
         <div className="flex items-center justify-between border-t border-border bg-muted/30 px-6 py-3">
           <p className="text-sm text-muted-foreground">
-            Mostrando <span className="font-medium">{filteredItens.length}</span> de{" "}
-            <span className="font-medium">{itensConsumo.length}</span> itens
+            Mostrando <span className="font-medium">{filteredItens.length}</span> de <span className="font-medium">{consumoData.length}</span> itens
           </p>
           <div className="flex items-center gap-2">
             <Button variant="outline" size="sm" disabled>

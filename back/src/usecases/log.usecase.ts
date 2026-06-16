@@ -1,4 +1,4 @@
-import { Saida, SaidaCreate, SaidaRepository } from "../interfaces/log.interface.js";
+import { Saida, SaidaCreate, SaidaRepository } from "../../../shared/log.interface.js";
 
 class SaidaUseCase {
 

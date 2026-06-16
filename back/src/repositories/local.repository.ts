@@ -1,5 +1,5 @@
 import { prisma } from "../db/prisma-client.js";
-import { Localizacao, LocalCreate, LocalRepository } from "../interfaces/local.interface.js";
+import { Localizacao, LocalCreate, LocalRepository } from "../../../shared/local.interface.js";
 
 class LocalRepoPrisma implements LocalRepository {
     

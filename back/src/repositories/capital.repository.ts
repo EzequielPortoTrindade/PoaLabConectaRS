@@ -1,5 +1,5 @@
 import { prisma } from "../db/prisma-client.js";
-import { Item_Capital, ItemCapitalCreate, ItemCapitalRepository } from "../interfaces/capital.interface.js";
+import { Item_Capital, ItemCapitalCreate, ItemCapitalRepository } from "../../../shared/capital.interface.js";
 
 class ItemCapitalRepoPrisma implements ItemCapitalRepository{
     async create(data: ItemCapitalCreate): Promise<Item_Capital> {

@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify";
 import { FornecedorUseCase } from "../usecases/supplier.usecase.js";
-import { FornecedorCreate } from "../interfaces/supplier.interface.js";
+import { FornecedorCreate } from "../../../shared/supplier.interface.js";
 import { FornecedorRepoPrisma } from "../repositories/supplier.repository.js"; 
 
 export async function fornecedorRoutes(fastify: FastifyInstance) {

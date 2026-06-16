@@ -6,11 +6,6 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  logging: {
-    fetches: {
-      fullUrl: false,
-    },
-  },
 }
 
 export default nextConfig

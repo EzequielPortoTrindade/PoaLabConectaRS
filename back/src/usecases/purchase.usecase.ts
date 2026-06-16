@@ -1,4 +1,4 @@
-import { Compra, CompraCreate, CompraRepository } from "../interfaces/purchase.interface.js";
+import { Compra, CompraCreate, CompraRepository } from "../../../shared/purchase.interface.js";
 
 class CompraUseCase {
 
