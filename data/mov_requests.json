@@ -1,0 +1,38 @@
+[
+  {
+    "id": "1781813009286",
+    "tipo": "emprestimo",
+    "itemType": "capital",
+    "id_item_consumo": null,
+    "id_item_capital": 1,
+    "id_itens_capital": [
+      1
+    ],
+    "numero_patrimonio": "PAT-001234",
+    "numeros_patrimonio": [
+      "PAT-001234"
+    ],
+    "quantidade": null,
+    "id_escola": null,
+    "id_usuario": 2,
+    "observacao": "lpkpo",
+    "status": "pending",
+    "criado_em": "2026-06-18T20:03:29.285Z"
+  },
+  {
+    "id": "1781813096347",
+    "tipo": "saida",
+    "itemType": "consumo",
+    "id_item_consumo": null,
+    "id_item_capital": null,
+    "id_itens_capital": null,
+    "numero_patrimonio": null,
+    "numeros_patrimonio": null,
+    "quantidade": 14,
+    "id_escola": null,
+    "id_usuario": 2,
+    "observacao": "poj",
+    "status": "pending",
+    "criado_em": "2026-06-18T20:04:56.347Z"
+  }
+]

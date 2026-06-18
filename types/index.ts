@@ -3,7 +3,7 @@
 // ==========================================
 
 export type TipoUsuario = "admin" | "professor"
-export type TipoMovimentacao = "entrada" | "saida"
+export type TipoMovimentacao = "emprestimo" | "saida"
 export type TipoItem = "consumo" | "capital"
 
 // ==========================================
@@ -95,15 +95,18 @@ export interface EstoqueEscola {
   escola?: Escola
 }
 
-export interface MovimentacaoEstoque {
-  id_movimentacao: number
+export interface Log_saida {
+  id_log_saida: number
   tipo: TipoMovimentacao
-  quantidade: number
+  quantidade: number | null
+  data_hora: string
   observacao: string | null
-  id_item_consumo: number
+  id_item_consumo: number | null
+  id_item_capital: number | null
   id_escola: number
   id_usuario: number
   criado_em: string
+  item_capital?: ItemCapital
   item?: ItemConsumo
   escola?: Escola
   usuario?: Usuario
@@ -160,12 +163,6 @@ export interface DashboardStats {
   variacao_movimentacoes: number
 }
 
-export interface MovimentacaoPeriodo {
-  data: string
-  entradas: number
-  saidas: number
-}
-
 export interface EstoqueBaixoItem {
   id_item: number
   nome: string
@@ -203,3 +200,15 @@ export interface TableFilters {
   sort_by?: string
   sort_order?: "asc" | "desc"
 }
+
+export type LogSaida = {
+  id_log_saida: number;
+  id_item_consumo: number | null;
+  id_item_capital: number | null;
+  id_escola: number;
+  id_usuario: number;
+  quantidade: number;
+  tipo: "saida" | "emprestimo";
+  data_hora: string;
+  observacao: string | null;
+};

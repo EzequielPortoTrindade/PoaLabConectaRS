@@ -29,33 +29,105 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { escolas, itensConsumo, itensCapital, Log_saida } from "@/lib/mock-data"
+import { StatusBadge } from "@/components/shared"
 
-const logsSaida = [
-  { id: 1, data: "28/05/2024 15:30", item: "Papel A4", quantidade: 10, unidade: "resmas", escola: "Monte Azul", solicitante: "Maria Silva", destino: "Secretaria", motivo: "Impressão de relatórios" },
-  { id: 2, data: "28/05/2024 14:15", item: "Lápis Preto", quantidade: 50, unidade: "un", escola: "São João", solicitante: "João Santos", destino: "Sala 05", motivo: "Atividade em sala" },
-  { id: 3, data: "27/05/2024 16:45", item: "Álcool 70%", quantidade: 5, unidade: "L", escola: "Dom Pedro", solicitante: "Ana Costa", destino: "Limpeza", motivo: "Limpeza diária" },
-  { id: 4, data: "27/05/2024 11:20", item: "Detergente", quantidade: 3, unidade: "un", escola: "Monte Azul", solicitante: "Pedro Lima", destino: "Cozinha", motivo: "Reposição" },
-  { id: 5, data: "26/05/2024 09:30", item: "Toner HP 85A", quantidade: 2, unidade: "un", escola: "São João", solicitante: "Carlos Oliveira", destino: "Lab. Informática", motivo: "Troca de cartucho" },
-  { id: 6, data: "26/05/2024 08:00", item: "Caneta Esferográfica", quantidade: 30, unidade: "un", escola: "Dom Pedro", solicitante: "Maria Silva", destino: "Sala dos Professores", motivo: "Distribuição" },
-  { id: 7, data: "25/05/2024 14:00", item: "Borracha Branca", quantidade: 20, unidade: "un", escola: "Monte Azul", solicitante: "João Santos", destino: "Sala 03", motivo: "Material escolar" },
-  { id: 8, data: "25/05/2024 10:45", item: "Desinfetante", quantidade: 4, unidade: "L", escola: "São João", solicitante: "Ana Costa", destino: "Banheiros", motivo: "Limpeza semanal" },
-]
 
 export default function LogsSaidaPage() {
   const [searchTerm, setSearchTerm] = React.useState("")
   const [filtroEscola, setFiltroEscola] = React.useState("todas")
+  const [logs, setLogs] = React.useState<Log_saida[]>([])
+  const [loading, setLoading] = React.useState(false)
 
-  const filteredLogs = logsSaida.filter((log) => {
+  React.useEffect(() => {
+    let isActive = true
+
+    async function loadLogs() {
+      setLoading(true)
+
+      try {
+        const response = await fetch("/api/movimentacoes/requests")
+        if (!response.ok) return
+
+        const data = await response.json()
+        const requests = Array.isArray(data.requests) ? data.requests : []
+
+        const normalizedLogs = requests.map((request: any) => {
+          const escola = escolas.find((item) => item.id_escola === request.id_escola)
+          const consumoItem = itensConsumo.find((item) => item.id_item_consumo === request.id_item_consumo)
+          const capitalIds = Array.isArray(request.id_itens_capital) ? request.id_itens_capital : []
+          const capitalItems = itensCapital.filter((item) => capitalIds.includes(item.id_item_capital))
+
+          const itemType = request.itemType === "capital" ? "capital" : "consumo"
+          const patrimonioLabel =
+            itemType === "capital"
+              ? capitalItems.length > 0
+                ? capitalItems.map((item) => item.numero_patrimonio).join(", ")
+                : Array.isArray(request.numeros_patrimonio) && request.numeros_patrimonio.length > 0
+                  ? request.numeros_patrimonio.join(", ")
+                  : request.numero_patrimonio ?? null
+              : null
+
+          return {
+            id: request.id,
+            criado_em: request.criado_em,
+            tipo: request.tipo === "emprestimo" ? "emprestimo" : "saida",
+            status: request.status === "approved" || request.status === "rejected" ? request.status : "pending",
+            itemType,
+            itemNome:
+              itemType === "capital"
+                ? capitalItems[0]?.nome ?? "Itens de capital"
+                : consumoItem?.nome ?? "Item de consumo",
+            escolaNome: escola?.nome.replace("Escola Municipal ", "") ?? "Escola não informada",
+            solicitante: request.id_usuario ? `Usuário ${request.id_usuario}` : "Sistema",
+            destino: itemType === "capital" ? "Patrimônio" : "Estoque",
+            motivo:
+              request.observacao ??
+              (request.status === "approved"
+                ? "Solicitação aprovada"
+                : request.status === "rejected"
+                  ? "Solicitação recusada"
+                  : "Solicitação pendente"),
+            quantidadeLabel:
+              itemType === "consumo"
+                ? `${Number(request.quantidade) || 0} un.`
+                : `${capitalIds.length || (Array.isArray(request.numeros_patrimonio) ? request.numeros_patrimonio.length : 1)} patrimônio(s)`,
+            patrimonioLabel,
+          }
+        })
+
+        if (isActive) {
+          setLogs(normalizedLogs)
+        }
+      } finally {
+        if (isActive) {
+          setLoading(false)
+        }
+      }
+    }
+
+    void loadLogs()
+
+    return () => {
+      isActive = false
+    }
+  }, [])
+
+  const filteredLogs = logs.filter((log) => {
     const matchSearch =
-      log.item.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      log.itemNome.toLowerCase().includes(searchTerm.toLowerCase()) ||
       log.solicitante.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      log.destino.toLowerCase().includes(searchTerm.toLowerCase())
     const matchEscola = filtroEscola === "todas" || log.escola === filtroEscola
     return matchSearch && matchEscola
   })
 
-  const totalSaidas = logsSaida.length
-  const saidasHoje = logsSaida.filter((l) => l.data.includes("28/05/2024")).length
+  const totalSaidas = logs.length
+  const saidasHoje = logs.filter((log) => {
+    const today = new Date().toLocaleDateString("pt-BR")
+    return new Date(log.criado_em).toLocaleDateString("pt-BR") === today
+  }).length
+  const pendentes = logs.filter((log) => log.status === "pending").length
+  const recusadas = logs.filter((log) => log.status === "rejected").length
 
   return (
     <div className="space-y-6">
@@ -100,27 +172,23 @@ export default function LogsSaidaPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Solicitantes
+              Pendentes
             </CardTitle>
             <User className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {new Set(logsSaida.map((l) => l.solicitante)).size}
-            </div>
+            <div className="text-2xl font-bold">{pendentes}</div>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Itens Diferentes
+              Recusadas
             </CardTitle>
             <ArrowDownRight className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {new Set(logsSaida.map((l) => l.item)).size}
-            </div>
+            <div className="text-2xl font-bold">{recusadas}</div>
           </CardContent>
         </Card>
       </div>
@@ -155,31 +223,67 @@ export default function LogsSaidaPage() {
           </div>
         </CardHeader>
         <CardContent>
+          {loading ? (
+            <div className="rounded-lg border border-dashed border-border bg-muted/20 p-6 text-sm text-muted-foreground">
+              Carregando histórico...
+            </div>
+          ) : null}
           <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>Data/Hora</TableHead>
                 <TableHead>Item</TableHead>
-                <TableHead className="text-right">Quantidade</TableHead>
+                <TableHead>Tipo</TableHead>
+                <TableHead className="text-right">Quantidade / Patrimônio</TableHead>
                 <TableHead>Escola</TableHead>
                 <TableHead>Solicitante</TableHead>
                 <TableHead>Destino</TableHead>
+                <TableHead>Status</TableHead>
                 <TableHead>Motivo</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredLogs.map((log) => (
                 <TableRow key={log.id}>
-                  <TableCell className="font-mono text-sm">{log.data}</TableCell>
-                  <TableCell className="font-medium">{log.item}</TableCell>
-                  <TableCell className="text-right">
-                    <Badge variant="secondary" className="bg-red-100 text-red-700">
-                      -{log.quantidade} {log.unidade}
+                  <TableCell className="font-mono text-sm">
+                    {new Date(log.criado_em).toLocaleString("pt-BR", {
+                      day: "2-digit",
+                      month: "2-digit",
+                      year: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </TableCell>
+                  <TableCell className="font-medium">{log.itemNome}</TableCell>
+                  <TableCell>
+                    <Badge variant="secondary" className="bg-muted text-foreground">
+                      {log.itemType === "capital" ? "Capital" : "Consumo"}
                     </Badge>
                   </TableCell>
-                  <TableCell>{log.escola}</TableCell>
+                  <TableCell className="text-right">
+                    <span className={log.itemType === "capital" ? "text-foreground" : "text-destructive font-semibold"}>
+                      {log.itemType === "capital" ? log.patrimonioLabel ?? log.quantidadeLabel : `-${log.quantidadeLabel}`}
+                    </span>
+                  </TableCell>
+                  <TableCell>{log.escolaNome}</TableCell>
                   <TableCell>{log.solicitante}</TableCell>
-                  <TableCell>{log.destino}</TableCell>
+                  <TableCell>
+                    <StatusBadge
+                      status={
+                        log.status === "approved"
+                          ? "approved"
+                          : log.status === "rejected"
+                            ? "rejected"
+                            : "pending"
+                      }
+                    >
+                      {log.status === "approved"
+                        ? "Aprovada"
+                        : log.status === "rejected"
+                          ? "Recusada"
+                          : "Pendente"}
+                    </StatusBadge>
+                  </TableCell>
                   <TableCell className="max-w-[200px] truncate text-muted-foreground">
                     {log.motivo}
                   </TableCell>

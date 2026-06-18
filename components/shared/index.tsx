@@ -84,18 +84,30 @@ export function StatsCard({
 }
 
 interface StatusBadgeProps {
-  status: "entrada" | "saida" | "ativo" | "inativo" | "baixo" | "normal"
+  status:
+    | "emprestimo"
+    | "saida"
+    | "ativo"
+    | "inativo"
+    | "baixo"
+    | "normal"
+    | "pending"
+    | "approved"
+    | "rejected"
   children: React.ReactNode
 }
 
 export function StatusBadge({ status, children }: StatusBadgeProps) {
   const statusStyles = {
-    entrada: "bg-success/10 text-success border-success/20",
+    emprestimo: "bg-success/10 text-success border-success/20",
     saida: "bg-destructive/10 text-destructive border-destructive/20",
     ativo: "bg-success/10 text-success border-success/20",
     inativo: "bg-muted text-muted-foreground border-border",
     baixo: "bg-destructive/10 text-destructive border-destructive/20",
     normal: "bg-success/10 text-success border-success/20",
+    pending: "bg-warning/10 text-warning border-warning/20",
+    approved: "bg-success/10 text-success border-success/20",
+    rejected: "bg-destructive/10 text-destructive border-destructive/20",
   }
 
   return (

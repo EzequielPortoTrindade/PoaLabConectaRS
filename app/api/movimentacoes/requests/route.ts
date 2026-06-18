@@ -39,14 +39,28 @@ export async function POST(req: Request) {
   await ensureDataFiles()
   const body = await req.json()
 
+  const capitalItemIds = Array.isArray(body.id_itens_capital)
+    ? body.id_itens_capital
+    : body.id_item_capital != null
+      ? [body.id_item_capital]
+      : []
+
+  const patrimonyNumbers = Array.isArray(body.numeros_patrimonio)
+    ? body.numeros_patrimonio
+    : body.numero_patrimonio != null
+      ? [body.numero_patrimonio]
+      : []
+
   const now = new Date().toISOString()
   const request = {
     id: Date.now().toString(),
     tipo: body.tipo || 'saida',
     itemType: body.itemType || 'consumo',
     id_item_consumo: body.id_item_consumo ?? null,
-    id_item_capital: body.id_item_capital ?? null,
-    numero_patrimonio: body.numero_patrimonio ?? null,
+    id_item_capital: body.id_item_capital ?? capitalItemIds[0] ?? null,
+    id_itens_capital: capitalItemIds.length > 0 ? capitalItemIds : null,
+    numero_patrimonio: body.numero_patrimonio ?? patrimonyNumbers[0] ?? null,
+    numeros_patrimonio: patrimonyNumbers.length > 0 ? patrimonyNumbers : null,
     quantidade: body.quantidade ?? null,
     id_escola: body.id_escola ?? null,
     id_usuario: body.id_usuario ?? null,

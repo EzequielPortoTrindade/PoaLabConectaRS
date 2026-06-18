@@ -30,7 +30,7 @@ import {
   estoqueBaixo,
   resumoEscolas,
   categoriasDestaque,
-  ultimasMovimentacoes,
+  LogSaida,
 } from "@/lib/mock-data"
 import { cn } from "@/lib/utils"
 
@@ -207,10 +207,10 @@ export function DashboardPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {ultimasMovimentacoes.map((mov) => (
-                  <tr key={mov.id_movimentacao} className="hover:bg-muted/30">
+                {LogSaida.map((log: LogSaida) => (
+                  <tr key={log.id_log_saida} className="hover:bg-muted/30">
                     <td className="whitespace-nowrap px-6 py-4 text-sm text-muted-foreground">
-                      {new Date(mov.criado_em).toLocaleDateString("pt-BR", {
+                      {new Date(log.criado_em).toLocaleDateString("pt-BR", {
                         day: "2-digit",
                         month: "2-digit",
                         year: "numeric",
@@ -219,27 +219,27 @@ export function DashboardPage() {
                       })}
                     </td>
                     <td className="whitespace-nowrap px-6 py-4">
-                      <StatusBadge status={mov.tipo}>
-                        {mov.tipo === "entrada" ? "Entrada" : "Saída"}
+                      <StatusBadge status={log.tipo}>
+                        {log.tipo === "entrada" ? "Entrada" : "Saída"}
                       </StatusBadge>
                     </td>
                     <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-foreground">
-                      {mov.item?.nome}
+                      {log.item?.nome}
                     </td>
                     <td className="whitespace-nowrap px-6 py-4 text-sm text-muted-foreground">
-                      {mov.escola?.nome?.replace("Escola Municipal ", "")}
+                      {log.escola?.nome?.replace("Escola Municipal ", "")}
                     </td>
                     <td className="whitespace-nowrap px-6 py-4 text-sm text-muted-foreground">
-                      {mov.usuario?.email?.split("@")[0].replace(".", " ").replace(/\b\w/g, (c) => c.toUpperCase())}
+                      {log.usuario?.email?.split("@")[0].replace(".", " ").replace(/\b\w/g, (c) => c.toUpperCase())}
                     </td>
                     <td
                       className={cn(
                         "whitespace-nowrap px-6 py-4 text-right text-sm font-semibold",
-                        mov.tipo === "entrada" ? "text-success" : "text-destructive"
+                        log.tipo === "entrada" ? "text-success" : "text-destructive"
                       )}
                     >
-                      {mov.tipo === "entrada" ? "+" : "-"}
-                      {mov.quantidade} un.
+                      {log.tipo === "entrada" ? "+" : "-"}
+                      {log.quantidade} un.
                     </td>
                   </tr>
                 ))}

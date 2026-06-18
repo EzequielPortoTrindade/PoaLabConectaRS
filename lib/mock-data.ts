@@ -1,10 +1,9 @@
 import type {
   DashboardStats,
-  MovimentacaoPeriodo,
   EstoqueBaixoItem,
   ResumoEscola,
   CategoriaDestaque,
-  MovimentacaoEstoque,
+  LogSaida,
   Localizacao,
   Escola,
   Usuario,
@@ -12,7 +11,8 @@ import type {
   Professor,
   ItemConsumo,
   ItemCapital,
-  Compra
+  Compra,
+  TipoMovimentacao
 } from "@/types"
 
 // ==========================================
@@ -30,14 +30,6 @@ export const dashboardStats: DashboardStats = {
   variacao_movimentacoes: 15.3,
 }
 
-export const movimentacoesPeriodo: MovimentacaoPeriodo[] = [
-  { data: "01/05", entradas: 45, saidas: 32 },
-  { data: "07/05", entradas: 52, saidas: 48 },
-  { data: "14/05", entradas: 61, saidas: 55 },
-  { data: "21/05", entradas: 42, saidas: 38 },
-  { data: "28/05", entradas: 78, saidas: 62 },
-  { data: "31/05", entradas: 55, saidas: 45 },
-]
 
 export const estoqueBaixo: EstoqueBaixoItem[] = [
   { id_item: 1, nome: "Papel A4", categoria: "Papelaria", quantidade: 5 },
@@ -345,15 +337,15 @@ export const compras: Compra[] = [
 ]
 
 
-
-
-export const ultimasMovimentacoes: MovimentacaoEstoque[] = [
+export const movimentacoes: LogSaida[] = [
   {
-    id_movimentacao: 1,
+    id_log_saida: 1,
     tipo: "saida",
     quantidade: 20,
+    data_hora: "2024-05-30T10:45:00",
     observacao: null,
     id_item_consumo: 1,
+    id_item_capital: null,
     id_escola: 1,
     id_usuario: 2,
     criado_em: "2024-05-30T10:45:00",
@@ -362,11 +354,13 @@ export const ultimasMovimentacoes: MovimentacaoEstoque[] = [
     usuario: usuarios[1],
   },
   {
-    id_movimentacao: 2,
-    tipo: "entrada",
+    id_log_saida: 2,
+    tipo: "emprestimo",
     quantidade: 50,
+    data_hora: "2024-05-30T09:30:00",
     observacao: null,
     id_item_consumo: 2,
+    id_item_capital: null,
     id_escola: 2,
     id_usuario: 3,
     criado_em: "2024-05-30T09:30:00",
@@ -375,11 +369,13 @@ export const ultimasMovimentacoes: MovimentacaoEstoque[] = [
     usuario: usuarios[2],
   },
   {
-    id_movimentacao: 3,
+    id_log_saida: 3,
     tipo: "saida",
     quantidade: 5,
+    data_hora: "2024-05-29T14:20:00",
     observacao: null,
     id_item_consumo: 3,
+    id_item_capital: null,
     id_escola: 3,
     id_usuario: 3,
     criado_em: "2024-05-29T16:20:00",
@@ -388,11 +384,13 @@ export const ultimasMovimentacoes: MovimentacaoEstoque[] = [
     usuario: usuarios[2],
   },
   {
-    id_movimentacao: 4,
-    tipo: "entrada",
+    id_log_saida: 4,
+    tipo: "emprestimo",
     quantidade: 2,
+    data_hora: "2024-05-29T14:10:00",
     observacao: null,
     id_item_consumo: 4,
+    id_item_capital: null,
     id_escola: 1,
     id_usuario: 2,
     criado_em: "2024-05-29T14:10:00",
@@ -401,15 +399,17 @@ export const ultimasMovimentacoes: MovimentacaoEstoque[] = [
     usuario: usuarios[1],
   },
   {
-    id_movimentacao: 5,
+    id_log_saida: 5,
     tipo: "saida",
     quantidade: 15,
+    data_hora: "2024-05-29T11:05:00",
     observacao: null,
-    id_item_consumo: 5,
+    id_item_consumo: null,
+    id_item_capital: 5,
     id_escola: 2,
     id_usuario: 2,
     criado_em: "2024-05-29T11:05:00",
-    item: itensConsumo[4],
+    item_capital: itensCapital[1],
     escola: escolas[1],
     usuario: usuarios[1],
   },
