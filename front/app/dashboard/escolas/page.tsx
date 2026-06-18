@@ -92,7 +92,8 @@ export default function EscolasPage() {
   const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
   e.preventDefault()
   createEscolaMutation.mutate(formData)
-}
+  }
+
 
   const filteredEscolas = escolas.filter((escola) =>
     escola.nome?.toLowerCase().includes(searchTerm.toLowerCase())

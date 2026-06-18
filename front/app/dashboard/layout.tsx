@@ -1,5 +1,6 @@
 import { ThemeProvider } from "@/components/theme-provider"
 import { DashboardLayout } from "@/components/layout"
+import { QueryProvider } from "@/components/query-provider"
 
 export default function DashboardRootLayout({
   children,
@@ -13,7 +14,9 @@ export default function DashboardRootLayout({
       enableSystem
       disableTransitionOnChange
     >
-      <DashboardLayout>{children}</DashboardLayout>
+      <QueryProvider>
+        <DashboardLayout>{children}</DashboardLayout>
+      </QueryProvider>
     </ThemeProvider>
   )
 }

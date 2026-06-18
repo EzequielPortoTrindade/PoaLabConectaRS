@@ -24,27 +24,36 @@ export async function localRoutes(fastify: FastifyInstance) {
     });
 
     // DELETE - Deletar Local
-    fastify.delete<{ Params: { id: string } }>('/:id', async (req, reply) => {
-        try {
-            const id = Number(req.params.id);
+    // fastify.delete('/:id', {
+    //     schema: {
+    //         params: {
+    //         type: 'object',
+    //         properties: {
+    //             id: { type: 'string' }
+    //         },
+    //         required: ['id']
+    //         }
+    //     }
+    // }, async (req, reply) => {
+    //     const params = req.params as { id?: string }
 
-            // Validação do ID antes de tentar deletar
-            if (isNaN(id)) {
-                return reply.status(400).send({ message: 'ID inválido' });
-            }
+    //     const id = Number(params.id)
 
-            const deletedLocal = await localUseCase.delete(id);
-            return reply.status(200).send(deletedLocal);
-        } catch (error) {
-            const message = error instanceof Error ? error.message : 'Erro';
-            
-            // Se o usecase retornar que o local não existe
-            if (message === 'Local not found') {
-                return reply.status(404).send({ message });
-            }
-            return reply.status(500).send({ message: 'Erro ao deletar local' });
-        }
-    });
+    //     if (!params.id || Number.isNaN(id)) {
+    //         return reply.status(400).send({ message: 'ID inválido' })
+    //     }
+
+    //     const deleted = await localUseCase.delete(id)
+
+    //     return reply.status(200).send(deleted)
+    // })
+
+    fastify.delete('/:id', async (req, reply) => {
+        console.log("RAW PARAMS:", req.params)
+        console.log("ID TYPE:", typeof (req.params as any).id)
+
+        return reply.send(req.params)
+    })
 
     // GET - Buscar Local por ID
     fastify.get<{ Params: { id: string } }>('/:id', async (req, reply) => {

@@ -14,6 +14,7 @@ import { saidaRoutes } from "./routes/log.route.js";
 const app: FastifyInstance = fastify({ logger: false });
 const JWT_SECRET = process.env.JWT_SECRET;
 const COOKIE_SECRET = process.env.COOKIE_SECRET;
+const DISABLE_AUTH = process.env.DISABLE_AUTH === "true"
 
 app.register(cors, {
   origin: "http://localhost:3000",
@@ -31,9 +32,16 @@ app.register(cookie, {
 if (!JWT_SECRET) {
   throw new Error("JWT_SECRET não definido");
 }
-app.register(jwt, {
+
+if (!DISABLE_AUTH) {
+  app.register(jwt, {
     secret: JWT_SECRET,
-});
+    cookie: {
+      cookieName: "token",
+      signed: false,
+    },
+  })
+}
 
 // ROTAS
 app.register(userRoutes, { prefix: "/users" });
@@ -46,22 +54,28 @@ app.register(compraRoutes, { prefix: "/compras" });
 app.register(saidaRoutes, { prefix: "/saidas" });
 
 app.addHook("preHandler", async (req, reply) => {
-  // routerPath pega a rota correspondente (ex: /users/login), ignorando queries (?pass=...)
-  const route = req.routeOptions.config.url; 
+  console.log("HOOK:", req.method, req.url)
+  if (DISABLE_AUTH) {
+    return 
+  }
 
-  const publicRoutes = ["/users/login", "/users/register"];
+  const publicRoutes = ["/users/login", "/users"]
+
+  const route = req.url.split("?")[0]
 
   if (route && publicRoutes.includes(route)) {
-    return; // Libera o acesso
+    return
   }
 
   try {
-    await req.jwtVerify();
-  } catch (err) {
-    return reply.status(401).send({ message: "Token inválido ou ausente" });
+    await req.jwtVerify()
+  } catch {
+    return reply.status(401).send({ message: "Token inválido ou ausente" })
   }
-});
-
+})
+// app.addHook("onRequest", async (req) => {
+//   console.log("REQ:", req.method, req.url)
+// })
 
 app.listen(
     { port: 3100, host: "0.0.0.0" },
