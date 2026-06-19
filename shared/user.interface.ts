@@ -7,7 +7,7 @@ export interface Usuario {
     nome: string;
     email: string;
     senha: string;
-    tipo: TipoUsuario;
+    tipo: TipoUsuario | null;
     id_escola: number | null;
     escola?: Escola;
 }

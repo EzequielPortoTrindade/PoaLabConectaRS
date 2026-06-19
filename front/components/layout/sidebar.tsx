@@ -47,8 +47,8 @@ const mainNavItems: NavItem[] = [
   { title: "Itens de Capital", href: "/dashboard/itens-capital", icon: Boxes },
   { title: "Compras", href: "/dashboard/compras", icon: ShoppingCart },
   { title: "Controle de Estoque", href: "/dashboard/estoque", icon: ClipboardList },
-  { title: "Logs de Saída", href: "/dashboard/logs-saida", icon: ArrowRightLeft },
-  { title: "Movimentações", href: "/dashboard/movimentacoes", icon: ArrowRightLeft },
+  //{ title: "Logs de Saída", href: "/dashboard/logs-saida", icon: ArrowRightLeft },
+  //{ title: "Movimentações", href: "/dashboard/movimentacoes", icon: ArrowRightLeft },
 ]
 
 const secondaryNavItems: NavItem[] = [

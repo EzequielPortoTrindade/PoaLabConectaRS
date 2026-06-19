@@ -43,7 +43,7 @@ model Usuario {
   nome       String
   email      String @unique
   senha      String
-  tipo       TipoUsuario
+  tipo       TipoUsuario?
 
   id_escola  Int?
   escola     Escola? @relation(fields: [id_escola], references: [id_escola])
