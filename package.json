@@ -2,9 +2,11 @@
   "name": "inv-escolar",
   "private": true,
   "scripts": {
+    "prisma:prepare": "pnpm --filter back exec prisma generate && pnpm --filter back exec prisma migrate dev",
     "dev:front": "pnpm --filter front dev",
     "dev:back": "pnpm --filter back dev",
-    "dev": "pnpm -r --parallel dev"
+    "dev:parallel": "pnpm -r --parallel dev",
+    "dev": "pnpm prisma:prepare && pnpm dev:parallel"
   },
   "dependencies": {
     "zod": "^3.25.76"

@@ -62,9 +62,9 @@ export async function userRoutes(fastify: FastifyInstance) {
     })
 
     // DELETE - protegido (O hook do server.ts valida o token automaticamente)
-    fastify.delete<{ Params: { id: string } }>("/:id", async (req, reply) => {
+    fastify.delete<{ Params: { id_usuario: number } }>("/:id", async (req, reply) => {
         try {
-            const id = Number(req.params.id)
+            const id = req.params.id_usuario
 
             const deletedUser = await userUseCase.delete(id)
 

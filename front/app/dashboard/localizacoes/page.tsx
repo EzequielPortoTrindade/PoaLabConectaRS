@@ -56,14 +56,6 @@ import {
 } from "@/components/ui/select"
 import { Localizacao } from "../../../../shared/local.interface"
 
-
-
-// interface Localizacao {
-//   id_localizacao: number
-//   nome_cidade: string
-//   uf: string
-// }
-
 export default function LocalizacoesPage() {
   const queryClient = useQueryClient()
 

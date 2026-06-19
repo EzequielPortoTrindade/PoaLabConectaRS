@@ -23,37 +23,29 @@ export async function localRoutes(fastify: FastifyInstance) {
         }
     });
 
-    // DELETE - Deletar Local
-    // fastify.delete('/:id', {
-    //     schema: {
-    //         params: {
-    //         type: 'object',
-    //         properties: {
-    //             id: { type: 'string' }
-    //         },
-    //         required: ['id']
-    //         }
-    //     }
-    // }, async (req, reply) => {
-    //     const params = req.params as { id?: string }
+   fastify.delete<{ Params: { id: string } }>('/:id', async (req, reply) => {
+        try {
+            const id = Number(req.params.id);
 
-    //     const id = Number(params.id)
+            if (!Number.isFinite(id)) {
+                return reply.status(400).send({ message: 'ID inválido' });
+            }
 
-    //     if (!params.id || Number.isNaN(id)) {
-    //         return reply.status(400).send({ message: 'ID inválido' })
-    //     }
+            const deletedLocal = await localUseCase.delete(id);
 
-    //     const deleted = await localUseCase.delete(id)
+            if (!deletedLocal) {
+                return reply.status(404).send({ message: 'Local not found' });
+            }
 
-    //     return reply.status(200).send(deleted)
-    // })
+            return reply.status(200).send(deletedLocal);
 
-    fastify.delete('/:id', async (req, reply) => {
-        console.log("RAW PARAMS:", req.params)
-        console.log("ID TYPE:", typeof (req.params as any).id)
+        } catch (error) {
+            const message = error instanceof Error ? error.message : 'Erro';
 
-        return reply.send(req.params)
-    })
+            return reply.status(500).send({ message });
+        }
+    });   
+
 
     // GET - Buscar Local por ID
     fastify.get<{ Params: { id: string } }>('/:id', async (req, reply) => {

@@ -54,7 +54,6 @@ app.register(compraRoutes, { prefix: "/compras" });
 app.register(saidaRoutes, { prefix: "/saidas" });
 
 app.addHook("preHandler", async (req, reply) => {
-  console.log("HOOK:", req.method, req.url)
   if (DISABLE_AUTH) {
     return 
   }

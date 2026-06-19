@@ -1,27 +1,65 @@
+
+//lib/api.ts
+
+// lib/api.ts
+// lib/api.ts
 // lib/api.ts
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export async function api(endpoint: string, options: RequestInit = {}) {
-  console.log("API CALL:", endpoint)
+  console.log("API CALL:", endpoint);
 
-  options.credentials = "include"
+  // 1. Tipamos explicitamente como um Record para o TypeScript aceitar chaves dinâmicas
+  const headers: Record<string, string> = { 
+    ...(options.headers as Record<string, string>) 
+  };
 
-  options.headers = {
-    "Content-Type": "application/json",
-    ...options.headers,
+  // 2. Agora o TS aceita a atribuição sem reclamar
+  if (options.body) {
+    headers["Content-Type"] = "application/json";
   }
 
-  const response = await fetch(`${API_URL}${endpoint}`, options)
+  options.headers = headers;
+  options.credentials = "include";
 
+  const response = await fetch(`${API_URL}${endpoint}`, options);
+
+  const responseText = await response.text();
+  
   if (!response.ok) {
-    const errorText = await response.text()
-    throw new Error(errorText || "Erro na requisição")
+    try {
+      const errorJson = JSON.parse(responseText);
+      throw new Error(errorJson.message || "Erro na requisição");
+    } catch {
+      throw new Error(responseText || `Erro ${response.status}`);
+    }
   }
 
-  // 🔥 evita crash quando não tem JSON
-  const text = await response.text()
-  return text ? JSON.parse(text) : null
+  return responseText ? JSON.parse(responseText) : null;
 }
+// const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+// export async function api(endpoint: string, options: RequestInit = {}) {
+//   console.log("API CALL:", endpoint)
+
+//   options.credentials = "include"
+
+//   options.headers = {
+//     "Content-Type": "application/json",
+//     ...options.headers,
+//   }
+
+//   const response = await fetch(`${API_URL}${endpoint}`, options)
+
+//   if (!response.ok) {
+//     const errorText = await response.text()
+//     throw new Error(errorText || "Erro na requisição")
+//   }
+
+//   // 🔥 evita crash quando não tem JSON
+//   const text = await response.text()
+//   return text ? JSON.parse(text) : null
+// }
 
 
 
