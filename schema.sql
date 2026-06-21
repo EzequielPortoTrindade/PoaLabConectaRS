@@ -151,7 +151,7 @@ CREATE TABLE item_capital (
 -- COMPRA FEITA DO USUARIO
 CREATE TABLE compras (
     id_compra INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    quantidade INT NOT NULL,
+    quantidade INT,
     data_compra DATE,
     valor_unitario NUMERIC(10,2),
     marca VARCHAR(40),
