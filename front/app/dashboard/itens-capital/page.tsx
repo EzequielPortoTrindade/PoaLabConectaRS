@@ -279,17 +279,22 @@ export default function ItensCapitalPage() {
               <TableRow>
                 <TableHead>Patrimônio</TableHead>
                 <TableHead>Nome</TableHead>
-                <TableHead>Descrição</TableHead>
+                <TableHead>Escola</TableHead>
+                <TableHead>Fornecedor</TableHead>
                 <TableHead>Ações</TableHead>
               </TableRow>
             </TableHeader>
 
-            <TableBody>
-              {filteredItens.map((item) => (
-                <TableRow key={item.id_itemCapital}>
+              <TableBody>
+                  {filteredItens.map((item) => (
+                    <TableRow key={item.id_itemCapital}>
                   <TableCell>{item.num_patrimonio}</TableCell>
+
                   <TableCell>{item.nome}</TableCell>
-                  <TableCell>{item.descricao ?? "-"}</TableCell>
+
+                  <TableCell>{item.escola?.nome ?? "-"}</TableCell>
+
+                  <TableCell>{item.fornecedor?.nome ?? "-"}</TableCell>
 
                   <TableCell>
                     <DropdownMenu>

@@ -7,7 +7,6 @@ class ItemConsumoRepoPrisma implements ItemConsumoRepository{
                 data: {
                     quantidade: data.quantidade,
                     nome: data.nome,
-                    emprestimo: data.emprestimo, 
                     descricao: data.descricao,
                     id_escola: data.id_escola,
                     id_fornecedor: data.id_fornecedor
@@ -35,7 +34,12 @@ class ItemConsumoRepoPrisma implements ItemConsumoRepository{
             }
         
         async findAll(): Promise<Item_Consumo[]> {
-                return prisma.item_Consumo.findMany()
+                return prisma.item_Consumo.findMany({
+                    include: {
+                        escola: true,
+                        fornecedor: true,
+                    },
+                })
             }   
 
         async delete(id_itemConsumo: number): Promise<Item_Consumo | null> {

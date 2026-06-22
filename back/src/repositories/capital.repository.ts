@@ -35,7 +35,12 @@ class ItemCapitalRepoPrisma implements ItemCapitalRepository{
             }
         
         async findAll(): Promise<Item_Capital[]> {
-                    return prisma.item_Capital.findMany()
+                    return prisma.item_Capital.findMany({
+                    include: {
+                        escola: true,
+                        fornecedor: true,
+                    },
+                })
         }        
 
         async delete(id_itemCapital: number): Promise<Item_Capital | null> {

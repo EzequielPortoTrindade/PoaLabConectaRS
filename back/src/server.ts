@@ -47,7 +47,7 @@ if (!DISABLE_AUTH) {
 app.register(userRoutes, { prefix: "/users" });
 app.register(localRoutes, { prefix: "/local" });
 app.register(escolaRoutes, { prefix: "/escolas" });
-app.register(itemConsumoRoutes, { prefix: "/consumo" });
+app.register(itemConsumoRoutes, { prefix: "/itens-consumo" });
 app.register(itemCapitalRoutes, { prefix: "/itens-capital" });
 app.register(fornecedorRoutes, { prefix: "/fornecedores" });
 app.register(compraRoutes, { prefix: "/compras" });

@@ -8,7 +8,6 @@ class ItemConsumoUseCase {
     async create({
         quantidade,
         nome,
-        emprestimo,
         descricao,
         id_escola,
         id_fornecedor
@@ -23,7 +22,6 @@ class ItemConsumoUseCase {
         return await this.itemConsumoRepo.create({
             quantidade,
             nome,
-            emprestimo,
             descricao,
             id_escola,
             id_fornecedor

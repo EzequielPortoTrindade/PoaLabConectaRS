@@ -72,7 +72,6 @@ model Item_Consumo {
   id_itemConsumo Int @id @default(autoincrement())
   quantidade     Int @default(0)
   nome           String
-  emprestimo     String?
   descricao      String?
 
   id_escola      Int

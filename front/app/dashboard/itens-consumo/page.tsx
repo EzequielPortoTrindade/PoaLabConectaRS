@@ -42,14 +42,11 @@ import {
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
   DialogTrigger,
 } from "@/components/ui/dialog"
-
-import { Label } from "@/components/ui/label"
 
 import {
   Select,
@@ -61,16 +58,7 @@ import {
 
 import type { Escola } from "../../../../shared/school.interface"
 import type { Fornecedor } from "../../../../shared/supplier.interface"
-import type { Item_Consumo } from "../../../../shared/consumo.interface"
-
-type FormData = {
-  quantidade: string
-  nome: string
-  emprestimo: string
-  descricao: string
-  id_escola: string
-  id_fornecedor: string
-}
+import type { Item_Consumo, ItemConsumoCreate } from "../../../../shared/consumo.interface"
 
 export default function ItensConsumoPage() {
   const queryClient = useQueryClient()
@@ -78,13 +66,12 @@ export default function ItensConsumoPage() {
   const [searchTerm, setSearchTerm] = React.useState("")
   const [openDialog, setOpenDialog] = React.useState(false)
 
-  const [formData, setFormData] = React.useState<FormData>({
-    quantidade: "",
+  const [formData, setFormData] = React.useState<ItemConsumoCreate>({
+    quantidade: 0,
     nome: "",
-    emprestimo: "disponivel",
     descricao: "",
-    id_escola: "",
-    id_fornecedor: "",
+    id_escola: 0,
+    id_fornecedor: 0,
   })
 
   // GET
@@ -98,15 +85,14 @@ export default function ItensConsumoPage() {
     queryFn: () => api("/escolas"),
   })
 
-  const { data: fornecedores = [] } =
-    useQuery<Fornecedor[]>({
-      queryKey: ["fornecedores"],
-      queryFn: () => api("/fornecedores"),
-    })
+  const { data: fornecedores = [] } = useQuery<Fornecedor[]>({
+    queryKey: ["fornecedores"],
+    queryFn: () => api("/fornecedores"),
+  })
 
   // CREATE
   const createMutation = useMutation({
-    mutationFn: (data: FormData) =>
+    mutationFn: (data: ItemConsumoCreate) =>
       api("/itens-consumo", {
         method: "POST",
         body: JSON.stringify({
@@ -118,11 +104,15 @@ export default function ItensConsumoPage() {
       }),
 
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["itens-consumo"],
-      })
-
+      queryClient.invalidateQueries({ queryKey: ["itens-consumo"] })
       setOpenDialog(false)
+      setFormData({
+        quantidade: 0,
+        nome: "",
+        descricao: "",
+        id_escola: 0,
+        id_fornecedor: 0,
+      })
     },
   })
 
@@ -134,30 +124,7 @@ export default function ItensConsumoPage() {
       }),
 
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["itens-consumo"],
-      })
-    },
-  })
-
-  // UPDATE EMPRESTIMO
-  const updateEmprestimoMutation = useMutation({
-    mutationFn: ({
-      id,
-      emprestimo,
-    }: {
-      id: number
-      emprestimo: string
-    }) =>
-      api(`/itens-consumo/${id}`, {
-        method: "PATCH",
-        body: JSON.stringify({ emprestimo }),
-      }),
-
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["itens-consumo"],
-      })
+      queryClient.invalidateQueries({ queryKey: ["itens-consumo"] })
     },
   })
 
@@ -175,9 +142,7 @@ export default function ItensConsumoPage() {
 
       {/* HEADER */}
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">
-          Itens de Consumo
-        </h1>
+        <h1 className="text-2xl font-bold">Itens de Consumo</h1>
 
         <Dialog open={openDialog} onOpenChange={setOpenDialog}>
           <DialogTrigger asChild>
@@ -190,7 +155,7 @@ export default function ItensConsumoPage() {
           <DialogContent>
             <form onSubmit={handleSubmit}>
               <DialogHeader>
-                <DialogTitle>Novo Item</DialogTitle>
+                <DialogTitle>Cadastro de Item</DialogTitle>
               </DialogHeader>
 
               <div className="grid gap-4 py-4">
@@ -199,10 +164,7 @@ export default function ItensConsumoPage() {
                   placeholder="Nome"
                   value={formData.nome}
                   onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      nome: e.target.value,
-                    })
+                    setFormData({ ...formData, nome: e.target.value })
                   }
                 />
 
@@ -211,10 +173,7 @@ export default function ItensConsumoPage() {
                   placeholder="Quantidade"
                   value={formData.quantidade}
                   onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      quantidade: e.target.value,
-                    })
+                    setFormData({ ...formData, quantidade: Number(e.target.value) })
                   }
                 />
 
@@ -222,44 +181,17 @@ export default function ItensConsumoPage() {
                   placeholder="Descrição"
                   value={formData.descricao}
                   onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      descricao: e.target.value,
-                    })
+                    setFormData({ ...formData, descricao: e.target.value })
                   }
                 />
 
-                {/* EMPRESTIMO */}
-                <Select
-                  value={formData.emprestimo}
-                  onValueChange={(v) =>
-                    setFormData({
-                      ...formData,
-                      emprestimo: v,
-                    })
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Empréstimo" />
-                  </SelectTrigger>
-
-                  <SelectContent>
-                    <SelectItem value="disponivel">
-                      Disponível
-                    </SelectItem>
-                    <SelectItem value="emprestado">
-                      Emprestado
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-
                 {/* ESCOLA */}
                 <Select
-                  value={formData.id_escola}
-                  onValueChange={(v) =>
-                    setFormData({
+                  value={formData.id_escola.toString()}
+                  onValueChange={(value) =>
+                  setFormData({
                       ...formData,
-                      id_escola: v,
+                      id_escola: Number(value),
                     })
                   }
                 >
@@ -280,11 +212,11 @@ export default function ItensConsumoPage() {
 
                 {/* FORNECEDOR */}
                 <Select
-                  value={formData.id_fornecedor}
-                  onValueChange={(v) =>
+                  value={formData.id_fornecedor.toString()}
+                  onValueChange={(value) =>
                     setFormData({
                       ...formData,
-                      id_fornecedor: v,
+                      id_fornecedor: Number(value),
                     })
                   }
                 >
@@ -305,9 +237,7 @@ export default function ItensConsumoPage() {
               </div>
 
               <DialogFooter>
-                <Button type="submit">
-                  Salvar
-                </Button>
+                <Button type="submit">Salvar</Button>
               </DialogFooter>
             </form>
           </DialogContent>
@@ -324,7 +254,7 @@ export default function ItensConsumoPage() {
       {/* TABLE */}
       <Card>
         <CardHeader>
-          <CardTitle>Lista</CardTitle>
+          <CardTitle>Lista de Itens</CardTitle>
         </CardHeader>
 
         <CardContent>
@@ -333,7 +263,6 @@ export default function ItensConsumoPage() {
               <TableRow>
                 <TableHead>Nome</TableHead>
                 <TableHead>Qtd</TableHead>
-                <TableHead>Empréstimo</TableHead>
                 <TableHead>Escola</TableHead>
                 <TableHead>Fornecedor</TableHead>
                 <TableHead>Ações</TableHead>
@@ -348,39 +277,9 @@ export default function ItensConsumoPage() {
 
                   <TableCell>{item.quantidade}</TableCell>
 
-                  {/* EMPRESTIMO INLINE EDIT */}
-                  <TableCell>
-                    <Select
-                      value={item.emprestimo ?? "disponivel"}
-                      onValueChange={(value) =>
-                        updateEmprestimoMutation.mutate({
-                          id: item.id_itemConsumo,
-                          emprestimo: value,
-                        })
-                      }
-                    >
-                      <SelectTrigger className="w-[140px]">
-                        <SelectValue />
-                      </SelectTrigger>
+                  <TableCell>{item.escola?.nome ?? "-"}</TableCell>
 
-                      <SelectContent>
-                        <SelectItem value="disponivel">
-                          Disponível
-                        </SelectItem>
-                        <SelectItem value="emprestado">
-                          Emprestado
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </TableCell>
-
-                  <TableCell>
-                    {item.escola?.nome ?? "-"}
-                  </TableCell>
-
-                  <TableCell>
-                    {item.fornecedor?.nome ?? "-"}
-                  </TableCell>
+                  <TableCell>{item.fornecedor?.nome ?? "-"}</TableCell>
 
                   <TableCell>
                     <DropdownMenu>
@@ -394,9 +293,7 @@ export default function ItensConsumoPage() {
                         <DropdownMenuItem
                           className="text-destructive"
                           onClick={() =>
-                            deleteMutation.mutate(
-                              item.id_itemConsumo
-                            )
+                            deleteMutation.mutate(item.id_itemConsumo)
                           }
                         >
                           <Trash2 className="mr-2 h-4 w-4" />
