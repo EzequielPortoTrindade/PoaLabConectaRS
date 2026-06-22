@@ -88,7 +88,6 @@ model Item_Consumo {
 model Item_Capital {
   id_itemCapital Int @id @default(autoincrement())
   nome           String
-  emprestimo     String?
   num_patrimonio String
   descricao      String
 

@@ -48,7 +48,7 @@ app.register(userRoutes, { prefix: "/users" });
 app.register(localRoutes, { prefix: "/local" });
 app.register(escolaRoutes, { prefix: "/escolas" });
 app.register(itemConsumoRoutes, { prefix: "/consumo" });
-app.register(itemCapitalRoutes, { prefix: "/capital" });
+app.register(itemCapitalRoutes, { prefix: "/itens-capital" });
 app.register(fornecedorRoutes, { prefix: "/fornecedores" });
 app.register(compraRoutes, { prefix: "/compras" });
 app.register(saidaRoutes, { prefix: "/saidas" });

@@ -16,22 +16,6 @@ import { api } from "../../../lib/api"
 import { Escola } from "../../../../shared/school.interface"
 import { Localizacao } from "../../../../shared/local.interface"
 
-// interface Escola {
-//   id_escola: number
-//   nome: string
-//   rua: string
-//   numero: number
-//   bairro: string
-//   id_localizacao: number
-// }
-
-
-// interface Localizacao {
-//   id_localizacao: number
-//   nome_cidade: string
-//   uf: string
-// }
-
 
 export default function EscolasPage() {
   const queryClient = useQueryClient()

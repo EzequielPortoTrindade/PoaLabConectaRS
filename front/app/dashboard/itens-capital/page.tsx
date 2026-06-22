@@ -1,18 +1,28 @@
 "use client"
 
 import * as React from "react"
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import type { SubmitEvent } from "react"
+
 import {
-  Boxes,
   Plus,
   Search,
   MoreHorizontal,
-  Pencil,
   Trash2,
-  Eye,
 } from "lucide-react"
+
+import { api } from "@/lib/api"
+
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+
 import {
   Table,
   TableBody,
@@ -21,12 +31,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+
 import {
   Dialog,
   DialogContent,
@@ -36,7 +48,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+
 import { Label } from "@/components/ui/label"
+
 import {
   Select,
   SelectContent,
@@ -44,299 +58,254 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { PageHeader } from "@/components/shared"
-import { escolas, fornecedores } from "@/lib/mock-data"
 
-interface CapitalItem {
-  id_item_capital: number
-  numero_patrimonio: string
-  nome: string
-  descricao: string | null
-  id_escola: number
-  id_fornecedor: number
-}
-
-const itensCapital: CapitalItem[] = [
-  {
-    id_item_capital: 1,
-    numero_patrimonio: "PAT-001234",
-    nome: "Computador Desktop Dell",
-    descricao: "PC para sala de informática",
-    id_escola: 1,
-    id_fornecedor: 1,
-  },
-  {
-    id_item_capital: 2,
-    numero_patrimonio: "PAT-001235",
-    nome: "Projetor Epson",
-    descricao: "Projetor para sala de aula",
-    id_escola: 2,
-    id_fornecedor: 2,
-  },
-  {
-    id_item_capital: 3,
-    numero_patrimonio: "PAT-001236",
-    nome: "Impressora HP LaserJet",
-    descricao: "Impressora de escritório",
-    id_escola: 3,
-    id_fornecedor: 3,
-  },
-  {
-    id_item_capital: 4,
-    numero_patrimonio: "PAT-001237",
-    nome: "Mesa de Professor",
-    descricao: "Mesa de madeira para sala de aula",
-    id_escola: 1,
-    id_fornecedor: 1,
-  },
-  {
-    id_item_capital: 5,
-    numero_patrimonio: "PAT-001238",
-    nome: "Ar Condicionado Split",
-    descricao: "Ar condicionado para sala dos professores",
-    id_escola: 2,
-    id_fornecedor: 2,
-  },
-  {
-    id_item_capital: 6,
-    numero_patrimonio: "PAT-001239",
-    nome: "Cadeira Giratória",
-    descricao: "Cadeira ergonômica para escritório",
-    id_escola: 3,
-    id_fornecedor: 3,
-  },
-]
-
-const itemsWithRelations = itensCapital.map((item) => ({
-  ...item,
-  escola: escolas.find((school) => school.id_escola === item.id_escola),
-  fornecedor: fornecedores.find((forn) => forn.id_fornecedor === item.id_fornecedor),
-}))
+import type { Escola } from "../../../../shared/school.interface"
+import type { Fornecedor } from "../../../../shared/supplier.interface"
+import type { Item_Capital, ItemCapitalCreate } from "../../../../shared/capital.interface"
 
 export default function ItensCapitalPage() {
-  const [searchTerm, setSearchTerm] = React.useState("")
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = React.useState(false)
-  const [numeroPatrimonio, setNumeroPatrimonio] = React.useState("")
-  const [nome, setNome] = React.useState("")
-  const [descricao, setDescricao] = React.useState("")
-  const [escolaSelecionada, setEscolaSelecionada] = React.useState("")
-  const [fornecedorSelecionado, setFornecedorSelecionado] = React.useState("")
+  const queryClient = useQueryClient()
 
-  const filteredItens = itemsWithRelations.filter((item) => {
-    const query = searchTerm.toLowerCase()
-    return (
-      item.numero_patrimonio.toLowerCase().includes(query) ||
-      item.nome.toLowerCase().includes(query) ||
-      item.escola?.nome.toLowerCase().includes(query) ||
-      item.fornecedor?.nome.toLowerCase().includes(query) ||
-      item.descricao?.toLowerCase().includes(query)
-    )
+  const [searchTerm, setSearchTerm] = React.useState("")
+  const [openDialog, setOpenDialog] = React.useState(false)
+
+  // FORM 
+  const [formData, setFormData] = React.useState<ItemCapitalCreate>({
+    nome: "",
+    descricao: "",
+    num_patrimonio: "",
+    id_escola: 0,
+    id_fornecedor: 0,
   })
 
-  const totalEscolasComPatrimonio = new Set(
-    itemsWithRelations.map((item) => item.id_escola)
-  ).size
+  // GET
+  const { data: itens = [] } = useQuery<Item_Capital[]>({
+    queryKey: ["itens-capital"],
+    queryFn: () => api("/itens-capital"),
+  })
 
-  const totalFornecedoresRelacionados = new Set(
-    itemsWithRelations.map((item) => item.id_fornecedor)
-  ).size
+  const { data: escolas = [] } = useQuery<Escola[]>({
+    queryKey: ["escolas"],
+    queryFn: () => api("/escolas"),
+  })
+
+  const { data: fornecedores = [] } = useQuery<Fornecedor[]>({
+    queryKey: ["fornecedores"],
+    queryFn: () => api("/fornecedores"),
+  })
+
+  // CREATE
+  const createMutation = useMutation({
+    mutationFn: (data: ItemCapitalCreate) =>
+      api("/itens-capital", {
+        method: "POST",
+        body: JSON.stringify({
+          ...data,
+          id_escola: Number(data.id_escola),
+          id_fornecedor: Number(data.id_fornecedor),
+        }),
+      }),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["itens-capital"] })
+
+      setOpenDialog(false)
+
+      setFormData({
+        nome: "",
+        descricao: "",
+        num_patrimonio: "",
+        id_escola: 0,
+        id_fornecedor: 0,
+      })
+    },
+  })
+
+  // DELETE
+  const deleteMutation = useMutation({
+    mutationFn: (id: number) =>
+      api(`/itens-capital/${id}`, {
+        method: "DELETE",
+      }),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["itens-capital"] })
+    },
+  })
+
+  const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    createMutation.mutate(formData)
+  }
+
+  const filteredItens = itens.filter((item) =>
+    item.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.num_patrimonio.toLowerCase().includes(searchTerm.toLowerCase())
+  )
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title="Itens de Capital"
-        description="Gerencie os bens patrimoniais com suas escolas e fornecedores"
-      >
-        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+
+      {/* HEADER */}
+      <div className="flex justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">Itens de Capital</h1>
+          <p className="text-muted-foreground">Controle de patrimônio</p>
+        </div>
+
+        <Dialog open={openDialog} onOpenChange={setOpenDialog}>
           <DialogTrigger asChild>
-            <Button className="gap-2">
-              <Plus className="h-4 w-4" />
+            <Button>
+              <Plus className="mr-2 h-4 w-4" />
               Novo Item
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[500px]">
-            <DialogHeader>
-              <DialogTitle>Cadastrar Item de Capital</DialogTitle>
-              <DialogDescription>
-                Preencha os dados para cadastrar um novo item de capital.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid gap-2">
-                <Label htmlFor="numero_patrimonio">Número do Patrimônio</Label>
+
+          <DialogContent className="max-w-lg">
+            <form onSubmit={handleSubmit}>
+              <DialogHeader>
+                <DialogTitle>Cadastro de Item</DialogTitle>
+              </DialogHeader>
+
+              <div className="grid gap-4 py-4">
+
                 <Input
-                  id="numero_patrimonio"
-                  value={numeroPatrimonio}
-                  onChange={(event) => setNumeroPatrimonio(event.target.value)}
-                  placeholder="PAT-000000"
+                  placeholder="Nome"
+                  value={formData.nome}
+                  onChange={(e) =>
+                    setFormData({ ...formData, nome: e.target.value })
+                  }
                 />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="nome">Nome</Label>
+
                 <Input
-                  id="nome"
-                  value={nome}
-                  onChange={(event) => setNome(event.target.value)}
-                  placeholder="Nome do item"
+                  placeholder="Nº Patrimônio"
+                  value={formData.num_patrimonio}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      num_patrimonio: e.target.value,
+                    })
+                  }
                 />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="descricao">Descrição</Label>
+
                 <Input
-                  id="descricao"
-                  value={descricao}
-                  onChange={(event) => setDescricao(event.target.value)}
-                  placeholder="Descrição do item"
+                  placeholder="Descrição"
+                  value={formData.descricao ?? ""}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      descricao: e.target.value,
+                    })
+                  }
                 />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="escola">Escola</Label>
+
+                {/* ESCOLA */}
                 <Select
-                  value={escolaSelecionada}
-                  onValueChange={(value) => setEscolaSelecionada(value)}
+                  value={formData.id_escola.toString()}
+                  onValueChange={(value) =>
+                    setFormData({
+                      ...formData,
+                      id_escola: Number(value),
+                    })
+                  }
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Selecione a escola" />
+                    <SelectValue placeholder="Escola" />
                   </SelectTrigger>
+
                   <SelectContent>
-                    {escolas.map((escola) => (
+                    {escolas.map((e) => (
                       <SelectItem
-                        key={escola.id_escola}
-                        value={escola.id_escola.toString()}
+                        key={e.id_escola}
+                        value={e.id_escola.toString()}
                       >
-                        {escola.nome}
+                        {e.nome}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                {/* FORNECEDOR */}
+                <Select
+                  value={formData.id_fornecedor.toString()}
+                  onValueChange={(value) =>
+                    setFormData({
+                      ...formData,
+                      id_fornecedor: Number(value),
+                    })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Fornecedor" />
+                  </SelectTrigger>
+
+                  <SelectContent>
+                    {fornecedores.map((f) => (
+                      <SelectItem
+                        key={f.id_fornecedor}
+                        value={f.id_fornecedor.toString()}
+                      >
+                        {f.nome}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
-              <div className="grid gap-2">
-                <Label htmlFor="fornecedor">Fornecedor</Label>
-                <Select
-                  value={fornecedorSelecionado}
-                  onValueChange={(value) => setFornecedorSelecionado(value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione o fornecedor" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {fornecedores.map((fornecedor) => (
-                      <SelectItem
-                        key={fornecedor.id_fornecedor}
-                        value={fornecedor.id_fornecedor.toString()}
-                      >
-                        {fornecedor.nome}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <DialogFooter>
-              <Button
-                variant="outline"
-                onClick={() => setIsCreateDialogOpen(false)}
-              >
-                Cancelar
-              </Button>
-              <Button onClick={() => setIsCreateDialogOpen(false)}>
-                Cadastrar
-              </Button>
-            </DialogFooter>
+
+              <DialogFooter>
+                <Button type="submit">Salvar</Button>
+              </DialogFooter>
+            </form>
           </DialogContent>
         </Dialog>
-      </PageHeader>
-
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Total de Itens de Capital
-            </CardTitle>
-            <Boxes className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{itemsWithRelations.length}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Total de Escolas com Patrimônio
-            </CardTitle>
-            <Boxes className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalEscolasComPatrimonio}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Total de Fornecedores Relacionados
-            </CardTitle>
-            <Boxes className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalFornecedoresRelacionados}</div>
-          </CardContent>
-        </Card>
       </div>
 
+      {/* SEARCH */}
+      <Input
+        placeholder="Buscar itens..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+      />
+
+      {/* TABLE */}
       <Card>
         <CardHeader>
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <CardTitle>Lista de Itens de Capital</CardTitle>
-            <div className="relative w-full sm:w-64">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Buscar por patrimônio, nome, escola ou fornecedor..."
-                className="pl-8"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-          </div>
+          <CardTitle>Itens de Capital</CardTitle>
         </CardHeader>
+
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Número Patrimônio</TableHead>
+                <TableHead>Patrimônio</TableHead>
                 <TableHead>Nome</TableHead>
                 <TableHead>Descrição</TableHead>
-                <TableHead>Escola</TableHead>
-                <TableHead>Fornecedor</TableHead>
-                <TableHead className="w-[50px]"></TableHead>
+                <TableHead>Ações</TableHead>
               </TableRow>
             </TableHeader>
+
             <TableBody>
               {filteredItens.map((item) => (
-                <TableRow key={item.id_item_capital}>
-                  <TableCell className="font-mono text-sm">
-                    {item.numero_patrimonio}
-                  </TableCell>
-                  <TableCell className="font-medium">{item.nome}</TableCell>
+                <TableRow key={item.id_itemCapital}>
+                  <TableCell>{item.num_patrimonio}</TableCell>
+                  <TableCell>{item.nome}</TableCell>
                   <TableCell>{item.descricao ?? "-"}</TableCell>
-                  <TableCell>{item.escola?.nome ?? "-"}</TableCell>
-                  <TableCell>{item.fornecedor?.nome ?? "-"}</TableCell>
+
                   <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <Button variant="ghost" size="icon">
                           <MoreHorizontal className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem>
-                          <Eye className="mr-2 h-4 w-4" />
-                          Visualizar
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                          <Pencil className="mr-2 h-4 w-4" />
-                          Editar
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="text-destructive">
+
+                      <DropdownMenuContent>
+                        <DropdownMenuItem
+                          className="text-destructive"
+                          onClick={() =>
+                            deleteMutation.mutate(item.id_itemCapital)
+                          }
+                        >
                           <Trash2 className="mr-2 h-4 w-4" />
                           Excluir
                         </DropdownMenuItem>

@@ -1,24 +1,44 @@
 "use client"
 
 import * as React from "react"
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import type { SubmitEvent } from "react"
+
 import {
   Plus,
   Search,
   MoreHorizontal,
-  Pencil,
   Trash2,
-  Eye,
 } from "lucide-react"
+
+import { api } from "@/lib/api"
+
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+
 import {
   Dialog,
   DialogContent,
@@ -28,7 +48,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+
 import { Label } from "@/components/ui/label"
+
 import {
   Select,
   SelectContent,
@@ -36,244 +58,360 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { PageHeader } from "@/components/shared"
-import { escolas, fornecedores, itensConsumo } from "@/lib/mock-data"
 
-const consumoData = itensConsumo.map((item) => ({
-  ...item,
-  escola: escolas.find((escola) => escola.id_escola === item.id_escola) ?? null,
-  fornecedor:
-    fornecedores.find((forn) => forn.id_fornecedor === item.id_fornecedor) ?? null,
-}))
+import type { Escola } from "../../../../shared/school.interface"
+import type { Fornecedor } from "../../../../shared/supplier.interface"
+import type { Item_Consumo } from "../../../../shared/consumo.interface"
+
+type FormData = {
+  quantidade: string
+  nome: string
+  emprestimo: string
+  descricao: string
+  id_escola: string
+  id_fornecedor: string
+}
 
 export default function ItensConsumoPage() {
-  const [searchTerm, setSearchTerm] = React.useState("")
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = React.useState(false)
-  const [nome, setNome] = React.useState("")
-  const [descricao, setDescricao] = React.useState("")
-  const [quantidade, setQuantidade] = React.useState("")
-  const [escolaSelecionada, setEscolaSelecionada] = React.useState<string>("")
-  const [fornecedorSelecionado, setFornecedorSelecionado] = React.useState<string>("")
+  const queryClient = useQueryClient()
 
-  const filteredItens = consumoData.filter((item) => {
-    const search = searchTerm.toLowerCase()
-    return (
-      item.nome.toLowerCase().includes(search) ||
-      item.descricao?.toLowerCase().includes(search) ||
-      item.escola?.nome.toLowerCase().includes(search) ||
-      item.fornecedor?.nome.toLowerCase().includes(search)
-    )
+  const [searchTerm, setSearchTerm] = React.useState("")
+  const [openDialog, setOpenDialog] = React.useState(false)
+
+  const [formData, setFormData] = React.useState<FormData>({
+    quantidade: "",
+    nome: "",
+    emprestimo: "disponivel",
+    descricao: "",
+    id_escola: "",
+    id_fornecedor: "",
   })
+
+  // GET
+  const { data: itens = [] } = useQuery<Item_Consumo[]>({
+    queryKey: ["itens-consumo"],
+    queryFn: () => api("/itens-consumo"),
+  })
+
+  const { data: escolas = [] } = useQuery<Escola[]>({
+    queryKey: ["escolas"],
+    queryFn: () => api("/escolas"),
+  })
+
+  const { data: fornecedores = [] } =
+    useQuery<Fornecedor[]>({
+      queryKey: ["fornecedores"],
+      queryFn: () => api("/fornecedores"),
+    })
+
+  // CREATE
+  const createMutation = useMutation({
+    mutationFn: (data: FormData) =>
+      api("/itens-consumo", {
+        method: "POST",
+        body: JSON.stringify({
+          ...data,
+          quantidade: Number(data.quantidade),
+          id_escola: Number(data.id_escola),
+          id_fornecedor: Number(data.id_fornecedor),
+        }),
+      }),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["itens-consumo"],
+      })
+
+      setOpenDialog(false)
+    },
+  })
+
+  // DELETE
+  const deleteMutation = useMutation({
+    mutationFn: (id: number) =>
+      api(`/itens-consumo/${id}`, {
+        method: "DELETE",
+      }),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["itens-consumo"],
+      })
+    },
+  })
+
+  // UPDATE EMPRESTIMO
+  const updateEmprestimoMutation = useMutation({
+    mutationFn: ({
+      id,
+      emprestimo,
+    }: {
+      id: number
+      emprestimo: string
+    }) =>
+      api(`/itens-consumo/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify({ emprestimo }),
+      }),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["itens-consumo"],
+      })
+    },
+  })
+
+  const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    createMutation.mutate(formData)
+  }
+
+  const filteredItens = itens.filter((item) =>
+    item.nome.toLowerCase().includes(searchTerm.toLowerCase())
+  )
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title="Itens de Consumo"
-        description="Gerencie os itens de consumo e seus relacionamentos com escola e fornecedor"
-      >
-        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+
+      {/* HEADER */}
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-bold">
+          Itens de Consumo
+        </h1>
+
+        <Dialog open={openDialog} onOpenChange={setOpenDialog}>
           <DialogTrigger asChild>
-            <Button className="gap-2">
-              <Plus className="h-4 w-4" />
+            <Button>
+              <Plus className="mr-2 h-4 w-4" />
               Novo Item
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[500px]">
-            <DialogHeader>
-              <DialogTitle>Cadastrar Item de Consumo</DialogTitle>
-              <DialogDescription>
-                Preencha os dados para cadastrar um novo item de consumo.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid gap-2">
-                <Label htmlFor="nome">Nome</Label>
+
+          <DialogContent>
+            <form onSubmit={handleSubmit}>
+              <DialogHeader>
+                <DialogTitle>Novo Item</DialogTitle>
+              </DialogHeader>
+
+              <div className="grid gap-4 py-4">
+
                 <Input
-                  id="nome"
-                  value={nome}
-                  onChange={(e) => setNome(e.target.value)}
-                  placeholder="Ex: Papel A4, Lápis..."
+                  placeholder="Nome"
+                  value={formData.nome}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      nome: e.target.value,
+                    })
+                  }
                 />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="quantidade">Quantidade</Label>
+
                 <Input
-                  id="quantidade"
                   type="number"
-                  value={quantidade}
-                  onChange={(e) => setQuantidade(e.target.value)}
-                  placeholder="0"
+                  placeholder="Quantidade"
+                  value={formData.quantidade}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      quantidade: e.target.value,
+                    })
+                  }
                 />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="descricao">Descrição</Label>
+
                 <Input
-                  id="descricao"
-                  value={descricao}
-                  onChange={(e) => setDescricao(e.target.value)}
-                  placeholder="Descrição do item"
+                  placeholder="Descrição"
+                  value={formData.descricao}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      descricao: e.target.value,
+                    })
+                  }
                 />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="escola">Escola</Label>
+
+                {/* EMPRESTIMO */}
                 <Select
-                  value={escolaSelecionada}
-                  onValueChange={(value) => setEscolaSelecionada(value)}
+                  value={formData.emprestimo}
+                  onValueChange={(v) =>
+                    setFormData({
+                      ...formData,
+                      emprestimo: v,
+                    })
+                  }
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Selecione a escola" />
+                    <SelectValue placeholder="Empréstimo" />
+                  </SelectTrigger>
+
+                  <SelectContent>
+                    <SelectItem value="disponivel">
+                      Disponível
+                    </SelectItem>
+                    <SelectItem value="emprestado">
+                      Emprestado
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+
+                {/* ESCOLA */}
+                <Select
+                  value={formData.id_escola}
+                  onValueChange={(v) =>
+                    setFormData({
+                      ...formData,
+                      id_escola: v,
+                    })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Escola" />
                   </SelectTrigger>
                   <SelectContent>
-                    {escolas.map((escola) => (
+                    {escolas.map((e) => (
                       <SelectItem
-                        key={escola.id_escola}
-                        value={escola.id_escola.toString()}
+                        key={e.id_escola}
+                        value={e.id_escola.toString()}
                       >
-                        {escola.nome}
+                        {e.nome}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                {/* FORNECEDOR */}
+                <Select
+                  value={formData.id_fornecedor}
+                  onValueChange={(v) =>
+                    setFormData({
+                      ...formData,
+                      id_fornecedor: v,
+                    })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Fornecedor" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {fornecedores.map((f) => (
+                      <SelectItem
+                        key={f.id_fornecedor}
+                        value={f.id_fornecedor.toString()}
+                      >
+                        {f.nome}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
-              <div className="grid gap-2">
-                <Label htmlFor="fornecedor">Fornecedor</Label>
-                <Select
-                  value={fornecedorSelecionado}
-                  onValueChange={(value) => setFornecedorSelecionado(value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione o fornecedor" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {fornecedores.map((forn) => (
-                      <SelectItem
-                        key={forn.id_fornecedor}
-                        value={forn.id_fornecedor.toString()}
-                      >
-                        {forn.nome}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <DialogFooter>
-              <Button
-                variant="outline"
-                onClick={() => setIsCreateDialogOpen(false)}
-              >
-                Cancelar
-              </Button>
-              <Button onClick={() => setIsCreateDialogOpen(false)}>
-                Cadastrar
-              </Button>
-            </DialogFooter>
+
+              <DialogFooter>
+                <Button type="submit">
+                  Salvar
+                </Button>
+              </DialogFooter>
+            </form>
           </DialogContent>
         </Dialog>
-      </PageHeader>
-
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="relative w-full sm:max-w-xs">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Buscar itens..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-9"
-          />
-        </div>
       </div>
 
-      <div className="rounded-xl border border-border bg-card overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-border bg-muted/50">
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                  Nome
-                </th>
-                <th className="px-6 py-3 text-center text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                  Quantidade
-                </th>
-                <th className="px-6 py-3 text-center text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                  Escola
-                </th>
-                <th className="px-6 py-3 text-center text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                  Fornecedor
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                  Descrição
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                  Ações
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
+      {/* SEARCH */}
+      <Input
+        placeholder="Buscar itens..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+      />
+
+      {/* TABLE */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Lista</CardTitle>
+        </CardHeader>
+
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Nome</TableHead>
+                <TableHead>Qtd</TableHead>
+                <TableHead>Empréstimo</TableHead>
+                <TableHead>Escola</TableHead>
+                <TableHead>Fornecedor</TableHead>
+                <TableHead>Ações</TableHead>
+              </TableRow>
+            </TableHeader>
+
+            <TableBody>
               {filteredItens.map((item) => (
-                <tr key={item.id_item} className="hover:bg-muted/30">
-                  <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-foreground">
-                    {item.nome}
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-muted-foreground">
-                    {item.quantidade}
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-muted-foreground">
+                <TableRow key={item.id_itemConsumo}>
+
+                  <TableCell>{item.nome}</TableCell>
+
+                  <TableCell>{item.quantidade}</TableCell>
+
+                  {/* EMPRESTIMO INLINE EDIT */}
+                  <TableCell>
+                    <Select
+                      value={item.emprestimo ?? "disponivel"}
+                      onValueChange={(value) =>
+                        updateEmprestimoMutation.mutate({
+                          id: item.id_itemConsumo,
+                          emprestimo: value,
+                        })
+                      }
+                    >
+                      <SelectTrigger className="w-[140px]">
+                        <SelectValue />
+                      </SelectTrigger>
+
+                      <SelectContent>
+                        <SelectItem value="disponivel">
+                          Disponível
+                        </SelectItem>
+                        <SelectItem value="emprestado">
+                          Emprestado
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </TableCell>
+
+                  <TableCell>
                     {item.escola?.nome ?? "-"}
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-muted-foreground">
+                  </TableCell>
+
+                  <TableCell>
                     {item.fornecedor?.nome ?? "-"}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-muted-foreground">
-                    {item.descricao ?? "-"}
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-right">
+                  </TableCell>
+
+                  <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <Button variant="ghost" size="icon">
                           <MoreHorizontal className="h-4 w-4" />
-                          <span className="sr-only">Abrir menu</span>
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Ações</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem>
-                          <Eye className="mr-2 h-4 w-4" />
-                          Visualizar
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                          <Pencil className="mr-2 h-4 w-4" />
-                          Editar
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem className="text-destructive">
+
+                      <DropdownMenuContent>
+                        <DropdownMenuItem
+                          className="text-destructive"
+                          onClick={() =>
+                            deleteMutation.mutate(
+                              item.id_itemConsumo
+                            )
+                          }
+                        >
                           <Trash2 className="mr-2 h-4 w-4" />
                           Excluir
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                  </TableCell>
 
-        <div className="flex items-center justify-between border-t border-border bg-muted/30 px-6 py-3">
-          <p className="text-sm text-muted-foreground">
-            Mostrando <span className="font-medium">{filteredItens.length}</span> de <span className="font-medium">{consumoData.length}</span> itens
-          </p>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" disabled>
-              Anterior
-            </Button>
-            <Button variant="outline" size="sm" disabled>
-              Próximo
-            </Button>
-          </div>
-        </div>
-      </div>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
     </div>
   )
 }
