@@ -8,20 +8,52 @@
     <title>EduBook - Login</title>
 </head>
 <body>
-    <div class="form">
-    <h2>Login</h2>
 
-    <input type="email" id="email" placeholder="E-mail">
+    <div class="background"></div>
 
-    <input type="password" id="senha" placeholder="Senha">
+    <section class="login-container">
 
-    <button onclick="login()">Entrar</button>
+        <div class="login-card">
 
-    <p>
-        <a href="../cadastro/cadastro.html">
-            Não tenho conta
-        </a>
-    </p>
-</div>
+            <div class="logo">
+                <img src="../assets/icon-logo.png" alt="Logo">
+            </div>
+
+            <h1>Bem-vindo</h1>
+
+            <p>
+                Acesse sua conta para continuar explorando o universo da
+                fabricação digital.
+            </p>
+
+            <div class="input-group">
+                <input type="email" id="email" placeholder="E-mail">
+            </div>
+
+            <div class="input-group">
+                <input type="password" id="senha" placeholder="Senha">
+            </div>
+
+            <button onclick="login()">
+                Entrar
+            </button>
+
+            <div class="links">
+                <a href="#">Esqueceu sua senha?</a>
+            </div>
+
+            <div class="divider"></div>
+
+            <p class="cadastro">
+                Não possui conta?
+                <a href="../cadastro/cadastro.html">
+                    Criar Conta
+                </a>
+            </p>
+
+        </div>
+
+    </section>
+
 </body>
 </html>

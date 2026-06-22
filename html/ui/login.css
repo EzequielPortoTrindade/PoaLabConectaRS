@@ -1,26 +1,176 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
 body{
-    font-family:Arial;
-    background:#f4f4f4;
+    font-family:'Poppins',sans-serif;
+    min-height:100vh;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    background:#f6f7fb;
+
+    overflow:hidden;
 }
 
-.form{
-    width:350px;
-    margin:50px auto;
-    background:white;
-    padding:20px;
-    border-radius:10px;
+/* Fundo decorativo */
+
+.background{
+    position:absolute;
+    width:500px;
+    height:500px;
+
+    background:radial-gradient(
+        circle,
+        rgba(0,102,255,.15),
+        transparent 70%
+    );
+
+    top:50%;
+    left:50%;
+
+    transform:translate(-50%,-50%);
 }
 
-input{
+/* Container */
+
+.login-container{
     width:100%;
-    padding:10px;
-    margin:8px 0;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
 }
+
+/* Card */
+
+.login-card{
+    width:100%;
+    max-width:420px;
+
+    background:rgba(255,255,255,.75);
+
+    backdrop-filter:blur(20px);
+
+    border:1px solid rgba(255,255,255,.6);
+
+    border-radius:28px;
+
+    padding:40px;
+
+    box-shadow:
+        0 15px 40px rgba(0,0,0,.08);
+
+    text-align:center;
+
+    z-index:10;
+}
+
+.logo img{
+    width:70px;
+    margin-bottom:20px;
+}
+
+.login-card h1{
+    font-size:2rem;
+    font-weight:600;
+    color:#111;
+}
+
+.login-card p{
+    color:#666;
+    margin-top:10px;
+    line-height:1.6;
+}
+
+/* Inputs */
+
+.input-group{
+    margin-top:18px;
+}
+
+.input-group input{
+    width:100%;
+
+    padding:16px;
+
+    border:none;
+
+    border-radius:14px;
+
+    background:#f2f4f8;
+
+    font-size:1rem;
+
+    transition:.3s;
+}
+
+.input-group input:focus{
+    outline:none;
+
+    background:white;
+
+    box-shadow:
+        0 0 0 3px rgba(0,102,255,.15);
+}
+
+/* Botão */
 
 button{
     width:100%;
-    padding:10px;
-    background:green;
-    color:white;
+
+    margin-top:22px;
+
+    padding:16px;
+
     border:none;
+
+    border-radius:14px;
+
+    background:#111;
+
+    color:white;
+
+    font-size:1rem;
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:.3s;
+}
+
+button:hover{
+    transform:translateY(-2px);
+}
+
+/* Links */
+
+.links{
+    margin-top:15px;
+}
+
+.links a{
+    text-decoration:none;
+    color:#555;
+    font-size:.9rem;
+}
+
+.divider{
+    height:1px;
+    background:#e6e6e6;
+    margin:25px 0;
+}
+
+.cadastro{
+    font-size:.95rem;
+}
+
+.cadastro a{
+    color:#0066ff;
+    text-decoration:none;
+    font-weight:600;
 }

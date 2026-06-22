@@ -79,7 +79,7 @@ export default function ComprasPage() {
       compra.fornecedor?.nome.toLowerCase().includes(query) ||
       compra.escola?.nome.toLowerCase().includes(query) ||
       compra.nota_fiscal.toLowerCase().includes(query) ||
-      compra.marca.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      
       compra.ItemConsumo?.nome.toLowerCase().includes(query) ||
       compra.ItemCapital?.nome.toLowerCase().includes(query)
     )

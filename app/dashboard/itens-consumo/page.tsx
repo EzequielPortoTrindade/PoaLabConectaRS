@@ -211,7 +211,7 @@ export default function ItensConsumoPage() {
             </thead>
             <tbody className="divide-y divide-border">
               {filteredItens.map((item) => (
-                <tr key={item.id_item} className="hover:bg-muted/30">
+                <tr key={item.id_item_consumo} className="hover:bg-muted/30">
                   <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-foreground">
                     {item.nome}
                   </td>
