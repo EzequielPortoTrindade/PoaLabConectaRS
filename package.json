@@ -7,8 +7,5 @@
     "dev:back": "pnpm --filter back dev",
     "dev:parallel": "pnpm -r --parallel dev",
     "dev": "pnpm prisma:prepare && pnpm dev:parallel"
-  },
-  "dependencies": {
-    "zod": "^3.25.76"
   }
 }

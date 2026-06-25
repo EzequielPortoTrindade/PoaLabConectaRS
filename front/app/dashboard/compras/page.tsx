@@ -43,20 +43,53 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { escolas, fornecedores, itensConsumo, itensCapital, compras } from "@/lib/mock-data"
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { api } from "../../../lib/api"
+import type { Escola } from "../../../../shared/school.interface"
+import type { Fornecedor } from "../../../../shared/supplier.interface"
+import type { Item_Consumo } from "../../../../shared/consumo.interface"
+import type { Item_Capital } from "../../../../shared/capital.interface"
+import type { Compra, CompraCreate } from "../../../../shared/purchase.interface"
+
+const { data: escolas = [] } = useQuery<Escola[]>({
+  queryKey: ["escolas"],
+  queryFn: () => api("/escolas"),
+})
+
+const { data: fornecedores = [] } = useQuery<Fornecedor[]>({
+  queryKey: ["fornecedores"],
+  queryFn: () => api("/fornecedores"),
+})
+
+const { data: itensConsumo = [] } = useQuery<Item_Consumo[]>({
+  queryKey: ["itens-consumo"],
+  queryFn: () => api("/itens-consumo"),
+})
+
+const { data: itensCapital = [] } = useQuery<Item_Capital[]>({
+  queryKey: ["itens-capital"],
+  queryFn: () => api("/itens-capital"),
+})
+
+const { data: compras = [] } = useQuery<Compra[]>({
+  queryKey: ["compras"],
+  queryFn: () => api("/compras"),
+})
 
 
-const comprasComRelacionamentos = compras.map((compra) => ({
+const comprasComRelacionamentos = compras.map((compra: Compra) => ({
   ...compra,
-  escola: escolas.find((escola) => escola.id_escola === compra.id_escola),
+  escola: escolas.find(
+    (escola) => escola.id_escola === compra.id_escola
+  ),
   fornecedor: fornecedores.find(
     (forn) => forn.id_fornecedor === compra.id_fornecedor
   ),
-  itemConsumo: itensConsumo.find(
-    (item) => item.id_item_consumo === compra.id_item_consumo
+  item_consumo: itensConsumo.find(
+    (item) => item.id_itemConsumo === compra.id_itemConsumo
   ),
-  itemCapital: itensCapital.find(
-    (item) => item.id_item_capital === compra.id_item_capital
+  item_capital: itensCapital.find(
+    (item) => item.id_itemCapital === compra.id_itemCapital
   ),
 }))
 
@@ -74,29 +107,31 @@ export default function ComprasPage() {
   const [itemCapitalSelecionado, setItemCapitalSelecionado] = React.useState("")
 
   const filteredCompras = comprasComRelacionamentos.filter((compra) => {
-    const query = searchTerm.toLowerCase()
-    return (
-      compra.fornecedor?.nome.toLowerCase().includes(query) ||
-      compra.escola?.nome.toLowerCase().includes(query) ||
-      compra.nota_fiscal.toLowerCase().includes(query) ||
-      compra.marca.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      compra.ItemConsumo?.nome.toLowerCase().includes(query) ||
-      compra.ItemCapital?.nome.toLowerCase().includes(query)
-    )
-  })
+  const query = searchTerm.toLowerCase()
+
+  return (
+    compra.fornecedor?.nome?.toLowerCase().includes(query) ||
+    compra.escola?.nome?.toLowerCase().includes(query) ||
+    compra.nota_fiscal.toLowerCase().includes(query) ||
+    compra.marca.toLowerCase().includes(query) ||
+    compra.item_consumo?.nome?.toLowerCase().includes(query) ||
+    compra.item_capital?.nome?.toLowerCase().includes(query)
+  )
+})
 
   const totalFornecedoresUtilizados = new Set(
-    compras.map((compra) => compra.id_fornecedor)
+  compras.map((compra: Compra) => compra.id_fornecedor)
   ).size
 
   const totalEscolasAtendidas = new Set(
-    compras.map((compra) => compra.id_escola)
+  compras.map((compra: Compra) => compra.id_escola)
   ).size
 
   const valorTotalComprado = compras.reduce(
-    (acc, compra) => acc + compra.quantidade * compra.valor_unitario,
-    0
-  )
+  (acc: number, compra: Compra) =>
+    acc + compra.quantidade * compra.valor_unitario,
+  0
+)
 
   return (
     <div className="space-y-6">
@@ -235,8 +270,8 @@ export default function ComprasPage() {
                   <SelectContent>
                     {itensConsumo.map((item) => (
                       <SelectItem
-                        key={item.id_item_consumo}
-                        value={item.id_item_consumo.toString()}
+                        key={item.id_itemConsumo}
+                        value={item.id_itemConsumo.toString()}
                       >
                         {item.nome}
                       </SelectItem>
@@ -261,8 +296,8 @@ export default function ComprasPage() {
                   <SelectContent>
                     {itensCapital.map((item) => (
                       <SelectItem
-                        key={item.id_item_capital}
-                        value={item.id_item_capital.toString()}
+                        key={item.id_itemCapital}
+                        value={item.id_itemCapital.toString()}
                       >
                         {item.nome}
                       </SelectItem>
@@ -376,17 +411,17 @@ export default function ComprasPage() {
             <TableBody>
               {filteredCompras.map((compra) => {
                 const itemName =
-                  compra.itemConsumo?.nome ?? compra.itemCapital?.nome ?? "-"
-                const itemType = compra.itemConsumo
+                  compra.item_consumo?.nome ?? compra.item_capital?.nome ?? "-"
+                const itemType = compra.item_consumo
                   ? "Consumo"
-                  : compra.itemCapital
+                  : compra.item_capital
                   ? "Capital"
                   : "-"
                 const valorTotal = compra.quantidade * compra.valor_unitario
 
                 return (
                   <TableRow key={compra.id_compra}>
-                    <TableCell>{compra.data_compra}</TableCell>
+                    <TableCell>{new Date(compra.data_compra).toLocaleDateString("pt-BR")}</TableCell>
                     <TableCell>{compra.escola?.nome ?? "-"}</TableCell>
                     <TableCell>{compra.fornecedor?.nome ?? "-"}</TableCell>
                     <TableCell>{itemName}</TableCell>

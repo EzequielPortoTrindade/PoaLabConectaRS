@@ -28,22 +28,16 @@ export default function EscolasPage() {
     nome: "", rua: "", numero: "", bairro: "", id_localizacao: ""
   })
 
-
-  // 1. BUSCAR ESCOLAS DO BACKEND VIA TANSTACK QUERY
   const { data: escolas = [], isLoading: loadingEscolas } = useQuery<Escola[]>({
     queryKey: ["escolas"],
     queryFn: () => api("/escolas")
   })
 
-
-  // 2. BUSCAR LOCALIZAÇÕES PARA O SELECT
   const { data: localizacoes = [] } = useQuery<Localizacao[]>({
     queryKey: ["localizacoes"],
     queryFn: () => api("/local")
   })
 
-
-  // 3. FAZER O POST DE NOVA ESCOLA
   const createEscolaMutation = useMutation({
     mutationFn: (novaEscola: typeof formData) => api("/escolas", {
       method: "POST",

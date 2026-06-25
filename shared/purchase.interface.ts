@@ -1,5 +1,3 @@
-import { Decimal } from "@prisma/client/runtime/library";
-
 import { Item_Consumo } from "./consumo.interface.js";
 import { Item_Capital } from "./capital.interface.js";
 import { Fornecedor } from "./supplier.interface.js";
@@ -9,7 +7,7 @@ export interface Compra {
     id_compra: number;
     quantidade: number;
     data_compra: Date;
-    valor_unitario: Decimal;
+    valor_unitario: number;
     marca: string;
     nota_fiscal: string;
     id_usuario: number;
@@ -27,7 +25,7 @@ export interface Compra {
 export interface CompraCreate {
     quantidade: number;
     data_compra: Date;
-    valor_unitario: Decimal;
+    valor_unitario: number;
     marca: string;
     nota_fiscal: string;
     id_usuario: number;
