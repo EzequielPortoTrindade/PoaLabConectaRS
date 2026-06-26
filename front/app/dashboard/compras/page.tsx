@@ -34,6 +34,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogDescription
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import {
@@ -46,12 +47,15 @@ import {
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { api } from "../../../lib/api"
 import type { Escola } from "../../../../shared/school.interface"
+import type {  Usuario }from "../../../../shared/user.interface"
 import type { Fornecedor } from "../../../../shared/supplier.interface"
 import type { Item_Consumo } from "../../../../shared/consumo.interface"
 import type { Item_Capital } from "../../../../shared/capital.interface"
 import type { Compra, CompraCreate } from "../../../../shared/purchase.interface"
-
 export default function ComprasPage() {
+
+
+
   const { data: escolas = [] } = useQuery<Escola[]>({
     queryKey: ["escolas"],
     queryFn: () => api("/escolas"),
@@ -71,6 +75,10 @@ export default function ComprasPage() {
     queryKey: ["itens-capital"],
     queryFn: () => api("/itens-capital"),
   })
+  const { data: usuarios = [] } = useQuery<Usuario[]>({
+      queryKey: ["usuarios"],
+      queryFn: () => api("/users"),
+    })
 
   const { data: compras = [] } = useQuery<Compra[]>({
     queryKey: ["compras"],
@@ -95,16 +103,40 @@ const comprasComRelacionamentos = compras.map((compra: Compra) => ({
 
   const [searchTerm, setSearchTerm] = React.useState("")
   const [isCreateDialogOpen, setIsCreateDialogOpen] = React.useState(false)
-  const [quantidade, setQuantidade] = React.useState("")
-  const [dataCompra, setDataCompra] = React.useState("")
-  const [valorUnitario, setValorUnitario] = React.useState("")
-  const [marca, setMarca] = React.useState("")
-  const [notaFiscal, setNotaFiscal] = React.useState("")
-  const [escolaSelecionada, setEscolaSelecionada] = React.useState("")
-  const [fornecedorSelecionado, setFornecedorSelecionado] = React.useState("")
-  const [itemConsumoSelecionado, setItemConsumoSelecionado] = React.useState("")
-  const [itemCapitalSelecionado, setItemCapitalSelecionado] = React.useState("")
+  const [formData, setFormData] = React.useState<CompraCreate>({
+    nota_fiscal: "" as any,
+    data_compra: "" as any,
+    quantidade: 0,
+    valor_unitario: 0,
+    marca: "",
+    id_usuario: 0, 
+    id_itemCapital: 0,
+    id_itemConsumo: 0,
+    id_escola: 0,
+    id_fornecedor: 0,
+  });
 
+  const queryClient = useQueryClient();
+
+const createCompra = useMutation({
+  mutationFn: (novaCompra: CompraCreate) =>
+    api("/compras", {
+      method: "POST",
+      body: JSON.stringify(novaCompra),
+    }),
+
+  onSuccess: () => {
+    queryClient.invalidateQueries({
+      queryKey: ["compras"],
+    });
+
+    setIsCreateDialogOpen(false);
+  },
+
+  onError: (erro) => {
+    console.error(erro);
+  },
+});
   const filteredCompras = comprasComRelacionamentos.filter((compra) => {
   const query = searchTerm.toLowerCase()
 
@@ -150,10 +182,13 @@ const comprasComRelacionamentos = compras.map((compra: Compra) => ({
               Nova Compra
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[500px]">
+          <DialogContent className="sm:max-w-[500px] h-[80vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Cadastrar Compra</DialogTitle>
             </DialogHeader>
+            <DialogDescription>
+              Preencha os campos abaixo para cadastrar uma nova compra.
+            </DialogDescription>
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
@@ -161,8 +196,10 @@ const comprasComRelacionamentos = compras.map((compra: Compra) => ({
                   <Input
                     id="quantidade"
                     type="number"
-                    value={quantidade}
-                    onChange={(event) => setQuantidade(event.target.value)}
+                    value={formData.quantidade}
+                    onChange={(e) => 
+                      setFormData({ ...formData, quantidade: Number(e.target.value),})
+                    }
                     placeholder="0"
                   />
                 </div>
@@ -171,8 +208,12 @@ const comprasComRelacionamentos = compras.map((compra: Compra) => ({
                   <Input
                     id="data_compra"
                     type="date"
-                    value={dataCompra}
-                    onChange={(event) => setDataCompra(event.target.value)}
+                    value={formData.data_compra
+                      ? new Date(formData.data_compra).toISOString().split("T")[0]
+                    : ""}
+                    onChange={(e) => 
+                      setFormData({ ...formData, data_compra: new Date(e.target.value),})
+                    }
                   />
                 </div>
               </div>
@@ -183,8 +224,10 @@ const comprasComRelacionamentos = compras.map((compra: Compra) => ({
                   id="valor_unitario"
                   type="number"
                   step="0.01"
-                  value={valorUnitario}
-                  onChange={(event) => setValorUnitario(event.target.value)}
+                  value={formData.valor_unitario}
+                  onChange={(e) => 
+                      setFormData({ ...formData, valor_unitario: Number(e.target.value),})
+                    }
                   placeholder="0,00"
                 />
               </div>
@@ -193,8 +236,10 @@ const comprasComRelacionamentos = compras.map((compra: Compra) => ({
                 <Label htmlFor="marca">Marca</Label>
                 <Input
                   id="marca"
-                  value={marca}
-                  onChange={(event) => setMarca(event.target.value)}
+                  value={formData.marca}
+                  onChange={(e) => 
+                      setFormData({ ...formData, marca: e.target.value,})
+                    }
                   placeholder="Marca"
                 />
               </div>
@@ -203,8 +248,10 @@ const comprasComRelacionamentos = compras.map((compra: Compra) => ({
                 <Label htmlFor="nota_fiscal">Nota Fiscal</Label>
                 <Input
                   id="nota_fiscal"
-                  value={notaFiscal}
-                  onChange={(event) => setNotaFiscal(event.target.value)}
+                  value={formData.nota_fiscal}
+                  onChange={(e) => 
+                      setFormData({ ...formData, nota_fiscal: e.target.value,})
+                    }
                   placeholder="NF-2024-000"
                 />
               </div>
@@ -212,8 +259,10 @@ const comprasComRelacionamentos = compras.map((compra: Compra) => ({
               <div className="grid gap-2">
                 <Label htmlFor="escola">Escola</Label>
                 <Select
-                  value={escolaSelecionada}
-                  onValueChange={setEscolaSelecionada}
+                  value={formData.id_escola ? formData.id_escola.toString() : ""}
+                  onValueChange={ (value) =>
+                    setFormData({ ...formData, id_escola: Number(value)})
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Selecione a escola" />
@@ -234,8 +283,9 @@ const comprasComRelacionamentos = compras.map((compra: Compra) => ({
               <div className="grid gap-2">
                 <Label htmlFor="fornecedor">Fornecedor</Label>
                 <Select
-                  value={fornecedorSelecionado}
-                  onValueChange={setFornecedorSelecionado}
+                  value={formData.id_fornecedor ? formData.id_fornecedor.toString() : ""}
+                  onValueChange={ (value) =>
+                    setFormData({ ...formData, id_fornecedor: Number(value)})}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Selecione o fornecedor" />
@@ -254,14 +304,41 @@ const comprasComRelacionamentos = compras.map((compra: Compra) => ({
               </div>
 
               <div className="grid gap-2">
+                <Label htmlFor="usuario">Usuário</Label>
+
+                <Select
+                  value={formData.id_usuario ? formData.id_usuario.toString() : ""}
+                  onValueChange={(value) =>
+                    setFormData({
+                      ...formData,
+                      id_usuario: Number(value),
+                    })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione o usuário" />
+                  </SelectTrigger>
+
+                  <SelectContent>
+                    {usuarios.map((usuario) => (
+                      <SelectItem
+                        key={usuario.id_usuario}
+                        value={usuario.id_usuario.toString()}
+                      >
+                        {usuario.nome}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="grid gap-2">
                 <Label htmlFor="item_consumo">Item de Consumo</Label>
                 <Select
-                  value={itemConsumoSelecionado}
-                  onValueChange={(value) => {
-                    setItemConsumoSelecionado(value)
-                    if (value) setItemCapitalSelecionado("")
-                  }}
-                  disabled={!!itemCapitalSelecionado}
+                  value={formData.id_itemConsumo ? formData.id_itemConsumo.toString() : ""}
+                  onValueChange={ (value) =>
+                    setFormData({ ...formData, id_itemConsumo: Number(value)})}
+                  disabled={!!formData.id_itemCapital}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Selecione um item de consumo" />
@@ -282,12 +359,10 @@ const comprasComRelacionamentos = compras.map((compra: Compra) => ({
               <div className="grid gap-2">
                 <Label htmlFor="item_capital">Item de Capital</Label>
                 <Select
-                  value={itemCapitalSelecionado}
-                  onValueChange={(value) => {
-                    setItemCapitalSelecionado(value)
-                    if (value) setItemConsumoSelecionado("")
-                  }}
-                  disabled={!!itemConsumoSelecionado}
+                  value={formData.id_itemCapital ? formData.id_itemCapital.toString() : ""}
+                  onValueChange={ (value) =>
+                    setFormData({ ...formData, id_itemCapital: Number(value)})}
+                  disabled={!!formData.id_itemConsumo}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Selecione um item de capital" />
@@ -316,7 +391,7 @@ const comprasComRelacionamentos = compras.map((compra: Compra) => ({
               >
                 Cancelar
               </Button>
-              <Button onClick={() => setIsCreateDialogOpen(false)}>
+              <Button onClick={() => createCompra.mutate(formData)}>
                 Cadastrar
               </Button>
             </DialogFooter>

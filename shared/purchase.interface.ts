@@ -10,10 +10,10 @@ export interface Compra {
     valor_unitario: number;
     marca: string;
     nota_fiscal: string;
-    id_usuario: number;
+    id_usuario?: number | null;
     id_fornecedor: number;
-    id_itemCapital: number;
-    id_itemConsumo: number;
+    id_itemCapital?: number| null;
+    id_itemConsumo?: number| null;
     id_escola: number;
 
     usuario?: Usuario;

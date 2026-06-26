@@ -25,6 +25,7 @@ import { api } from "../../../lib/api"
 import type { Escola } from "../../../../shared/school.interface"
 import type { Fornecedor } from "../../../../shared/supplier.interface"
 import type { Item_Consumo } from "../../../../shared/consumo.interface"
+export default function EstoquePage() {
 
 const { data: escolas = [] } = useQuery<Escola[]>({
   queryKey: ["escolas"],
@@ -69,7 +70,6 @@ const getBadgeVariant = (status: string) => {
   }
 }
 
-export default function EstoquePage() {
   const [searchTerm, setSearchTerm] = React.useState("")
 
   const filteredEstoque = estoque.filter((item) => {

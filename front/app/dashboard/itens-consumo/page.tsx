@@ -67,11 +67,11 @@ export default function ItensConsumoPage() {
   const [openDialog, setOpenDialog] = React.useState(false)
 
   const [formData, setFormData] = React.useState<ItemConsumoCreate>({
-    quantidade: 0,
+    quantidade: "" as any,
     nome: "",
     descricao: "",
-    id_escola: 0,
-    id_fornecedor: 0,
+    id_escola: "" as any,
+    id_fornecedor: "" as any,
   })
 
   // GET
@@ -107,11 +107,11 @@ export default function ItensConsumoPage() {
       queryClient.invalidateQueries({ queryKey: ["itens-consumo"] })
       setOpenDialog(false)
       setFormData({
-        quantidade: 0,
+        quantidade: "" as any,
         nome: "",
         descricao: "",
-        id_escola: 0,
-        id_fornecedor: 0,
+        id_escola: ""  as any,
+        id_fornecedor: "" as any,
       })
     },
   })

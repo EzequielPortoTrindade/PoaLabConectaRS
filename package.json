@@ -7,5 +7,8 @@
     "dev:back": "pnpm --filter back dev",
     "dev:parallel": "pnpm -r --parallel dev",
     "dev": "pnpm prisma:prepare && pnpm dev:parallel"
+  },
+  "dependencies": {
+    "pnpm": "^11.9.0"
   }
 }

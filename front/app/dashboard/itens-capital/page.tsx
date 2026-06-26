@@ -74,8 +74,8 @@ export default function ItensCapitalPage() {
     nome: "",
     descricao: "",
     num_patrimonio: "",
-    id_escola: 0,
-    id_fornecedor: 0,
+    id_escola: "" as any,
+    id_fornecedor: "" as any,
   })
 
   // GET
@@ -115,8 +115,8 @@ export default function ItensCapitalPage() {
         nome: "",
         descricao: "",
         num_patrimonio: "",
-        id_escola: 0,
-        id_fornecedor: 0,
+        id_escola: "" as any,
+        id_fornecedor: "" as any,
       })
     },
   })
