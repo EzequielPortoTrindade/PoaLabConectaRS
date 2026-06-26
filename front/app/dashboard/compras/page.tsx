@@ -51,31 +51,31 @@ import type { Item_Consumo } from "../../../../shared/consumo.interface"
 import type { Item_Capital } from "../../../../shared/capital.interface"
 import type { Compra, CompraCreate } from "../../../../shared/purchase.interface"
 
-const { data: escolas = [] } = useQuery<Escola[]>({
-  queryKey: ["escolas"],
-  queryFn: () => api("/escolas"),
-})
+export default function ComprasPage() {
+  const { data: escolas = [] } = useQuery<Escola[]>({
+    queryKey: ["escolas"],
+    queryFn: () => api("/escolas"),
+  })
 
-const { data: fornecedores = [] } = useQuery<Fornecedor[]>({
-  queryKey: ["fornecedores"],
-  queryFn: () => api("/fornecedores"),
-})
+  const { data: fornecedores = [] } = useQuery<Fornecedor[]>({
+    queryKey: ["fornecedores"],
+    queryFn: () => api("/fornecedores"),
+  })
 
-const { data: itensConsumo = [] } = useQuery<Item_Consumo[]>({
-  queryKey: ["itens-consumo"],
-  queryFn: () => api("/itens-consumo"),
-})
+  const { data: itensConsumo = [] } = useQuery<Item_Consumo[]>({
+    queryKey: ["itens-consumo"],
+    queryFn: () => api("/itens-consumo"),
+  })
 
-const { data: itensCapital = [] } = useQuery<Item_Capital[]>({
-  queryKey: ["itens-capital"],
-  queryFn: () => api("/itens-capital"),
-})
+  const { data: itensCapital = [] } = useQuery<Item_Capital[]>({
+    queryKey: ["itens-capital"],
+    queryFn: () => api("/itens-capital"),
+  })
 
-const { data: compras = [] } = useQuery<Compra[]>({
-  queryKey: ["compras"],
-  queryFn: () => api("/compras"),
-})
-
+  const { data: compras = [] } = useQuery<Compra[]>({
+    queryKey: ["compras"],
+    queryFn: () => api("/compras"),
+  })
 
 const comprasComRelacionamentos = compras.map((compra: Compra) => ({
   ...compra,
@@ -93,7 +93,6 @@ const comprasComRelacionamentos = compras.map((compra: Compra) => ({
   ),
 }))
 
-export default function ComprasPage() {
   const [searchTerm, setSearchTerm] = React.useState("")
   const [isCreateDialogOpen, setIsCreateDialogOpen] = React.useState(false)
   const [quantidade, setQuantidade] = React.useState("")

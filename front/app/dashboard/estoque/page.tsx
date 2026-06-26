@@ -20,13 +20,35 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Search as SearchIcon } from "lucide-react"
-import { itensConsumo, escolas, fornecedores } from "@/lib/mock-data"
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { api } from "../../../lib/api"
+import type { Escola } from "../../../../shared/school.interface"
+import type { Fornecedor } from "../../../../shared/supplier.interface"
+import type { Item_Consumo } from "../../../../shared/consumo.interface"
 
-const estoque = itensConsumo.map((item) => ({
+const { data: escolas = [] } = useQuery<Escola[]>({
+  queryKey: ["escolas"],
+  queryFn: () => api("/escolas"),
+})
+
+const { data: fornecedores = [] } = useQuery<Fornecedor[]>({
+  queryKey: ["fornecedores"],
+  queryFn: () => api("/fornecedores"),
+})
+
+const { data: itensConsumo = [] } = useQuery<Item_Consumo[]>({
+  queryKey: ["itens-consumo"],
+  queryFn: () => api("/itens-consumo"),
+})
+
+const estoque = itensConsumo.map((item: Item_Consumo) => ({
   ...item,
-  escola: escolas.find((escola) => escola.id_escola === item.id_escola),
+  escola: escolas.find(
+    (escola: Escola) => escola.id_escola === item.id_escola
+  ),
   fornecedor: fornecedores.find(
-    (fornecedor) => fornecedor.id_fornecedor === item.id_fornecedor
+    (fornecedor: Fornecedor) =>
+      fornecedor.id_fornecedor === item.id_fornecedor
   ),
 }))
 
@@ -144,7 +166,7 @@ export default function EstoquePage() {
               {filteredEstoque.map((item) => {
                 const status = getStatus(item.quantidade)
                 return (
-                  <TableRow key={item.id_item_consumo}>
+                  <TableRow key={item.id_itemConsumo}>
                     <TableCell className="font-medium">{item.nome}</TableCell>
                     <TableCell>{item.quantidade}</TableCell>
                     <TableCell>{item.escola?.nome ?? "-"}</TableCell>
