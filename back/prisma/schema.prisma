@@ -108,17 +108,17 @@ model Compra {
   marca          String
   nota_fiscal    String
 
-  id_usuario     Int
-  usuario        Usuario @relation(fields: [id_usuario], references: [id_usuario])
+  id_usuario     Int?
+  usuario        Usuario? @relation(fields: [id_usuario], references: [id_usuario])
 
   id_fornecedor  Int
   fornecedor     Fornecedor @relation(fields: [id_fornecedor], references: [id_fornecedor])
 
-  id_itemConsumo Int
-  item_consumo   Item_Consumo @relation(fields: [id_itemConsumo], references: [id_itemConsumo])
+  id_itemConsumo Int?
+  item_consumo   Item_Consumo? @relation(fields: [id_itemConsumo], references: [id_itemConsumo])
 
-  id_itemCapital Int
-  item_capital   Item_Capital @relation(fields: [id_itemCapital], references: [id_itemCapital])
+  id_itemCapital Int?
+  item_capital   Item_Capital? @relation(fields: [id_itemCapital], references: [id_itemCapital])
 
   id_escola      Int
   escola         Escola @relation(fields: [id_escola], references: [id_escola])

@@ -109,9 +109,9 @@ const comprasComRelacionamentos = compras.map((compra: Compra) => ({
     quantidade: 0,
     valor_unitario: 0,
     marca: "",
-    id_usuario: 0, 
-    id_itemCapital: 0,
-    id_itemConsumo: 0,
+    id_usuario: undefined, 
+    id_itemCapital: undefined,
+    id_itemConsumo: undefined,
     id_escola: 0,
     id_fornecedor: 0,
   });
@@ -119,7 +119,7 @@ const comprasComRelacionamentos = compras.map((compra: Compra) => ({
   const queryClient = useQueryClient();
 
 const createCompra = useMutation({
-  mutationFn: (novaCompra: CompraCreate) =>
+  mutationFn: (novaCompra: CompraCreate) => 
     api("/compras", {
       method: "POST",
       body: JSON.stringify(novaCompra),

@@ -28,10 +28,10 @@ export interface CompraCreate {
     valor_unitario: number;
     marca: string;
     nota_fiscal: string;
-    id_usuario: number;
+    id_usuario?: number;
     id_fornecedor: number;
-    id_itemConsumo: number;
-    id_itemCapital: number;
+    id_itemConsumo?: number;
+    id_itemCapital?: number;
     id_escola: number;
 }
 
